@@ -2,7 +2,6 @@ import type { OpenViewState } from 'obsidian';
 
 import { around } from 'monkey-around';
 import {
-
   parseLinktext,
   PluginSettingTab,
   WorkspaceLeaf

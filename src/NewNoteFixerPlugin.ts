@@ -25,9 +25,10 @@ export class NewNoteFixerPlugin extends PluginBase {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     this.register(around(WorkspaceLeaf.prototype, {
-      openLinkText: (next: OpenLinkTextFn): OpenLinkTextFn => function openLinkText(this: WorkspaceLeaf, linktext, sourcePath, openViewState) {
-        return self.openLinkText(next, this, linktext, sourcePath, openViewState);
-      }
+      openLinkText: (next: OpenLinkTextFn): OpenLinkTextFn =>
+        function openLinkText(this: WorkspaceLeaf, linktext, sourcePath, openViewState) {
+          return self.openLinkText(next, this, linktext, sourcePath, openViewState);
+        }
     }));
   }
 

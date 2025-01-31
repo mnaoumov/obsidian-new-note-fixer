@@ -23,11 +23,11 @@ export class NewNoteFixerPlugin extends PluginBase {
 
   protected override onloadComplete(): void {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
+    const that = this;
     this.register(around(WorkspaceLeaf.prototype, {
       openLinkText: (next: OpenLinkTextFn): OpenLinkTextFn =>
         function openLinkText(this: WorkspaceLeaf, linktext, sourcePath, openViewState) {
-          return self.openLinkText(next, this, linktext, sourcePath, openViewState);
+          return that.openLinkText(next, this, linktext, sourcePath, openViewState);
         }
     }));
   }
@@ -36,7 +36,8 @@ export class NewNoteFixerPlugin extends PluginBase {
     const { path, subpath } = parseLinktext(linktext);
     const file = this.app.metadataCache.getFirstLinkpathDest(path, sourcePath);
     if (file || path.startsWith('/')) {
-      return next.call(leaf, linktext, sourcePath, openViewState);
+      await next.call(leaf, linktext, sourcePath, openViewState);
+      return;
     }
 
     const newFileParent = this.app.fileManager.getNewFileParent(sourcePath, 'dummy.md');
@@ -49,6 +50,6 @@ export class NewNoteFixerPlugin extends PluginBase {
       return;
     }
 
-    return next.call(leaf, `/${fullPath}${subpath}`, sourcePath, openViewState);
+    await next.call(leaf, `/${fullPath}${subpath}`, sourcePath, openViewState);
   }
 }

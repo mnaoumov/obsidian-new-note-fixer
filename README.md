@@ -12,7 +12,7 @@ This plugin fixes this behavior by respecting `Default location for new notes` s
 
 ## Installation
 
-- The plugin is available is not available in [the official Community Plugins repository](https://obsidian.md/plugins) yet.
+- The plugin is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=new-note-fixer).
 - [Beta releases](obsidian://brat?plugin=https://github.com/mnaoumov/obsidian-new-note-fixer) can be installed via [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
 
 ## Debugging

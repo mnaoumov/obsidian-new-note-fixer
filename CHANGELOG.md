@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.8
+
+- New template
+
 ## 1.0.7
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.2.1

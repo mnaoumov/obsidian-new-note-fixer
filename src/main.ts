@@ -1,4 +1,4 @@
-import { NewNoteFixerPlugin } from './NewNoteFixerPlugin.ts';
+import { Plugin } from './Plugin.ts';
 
 // eslint-disable-next-line import-x/no-default-export
-export default NewNoteFixerPlugin;
+export default Plugin;

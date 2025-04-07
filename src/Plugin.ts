@@ -1,35 +1,27 @@
 import type { OpenViewState } from 'obsidian';
 
-import { around } from 'monkey-around';
 import {
   parseLinktext,
-  PluginSettingTab,
   WorkspaceLeaf
 } from 'obsidian';
-import { EmptySettings } from 'obsidian-dev-utils/obsidian/Plugin/EmptySettings';
+import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import { join } from 'obsidian-dev-utils/Path';
 
+import type { PluginTypes } from './PluginTypes.ts';
+
 type OpenLinkTextFn = WorkspaceLeaf['openLinkText'];
 
-export class NewNoteFixerPlugin extends PluginBase {
-  protected override createPluginSettings(): EmptySettings {
-    return new EmptySettings();
-  }
-
-  protected override createPluginSettingsTab(): null | PluginSettingTab {
-    return null;
-  }
-
-  protected override onloadComplete(): void {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+export class Plugin extends PluginBase<PluginTypes> {
+  protected override async onloadImpl(): Promise<void> {
+    await super.onloadImpl();
     const that = this;
-    this.register(around(WorkspaceLeaf.prototype, {
+    registerPatch(this, WorkspaceLeaf.prototype, {
       openLinkText: (next: OpenLinkTextFn): OpenLinkTextFn =>
         function openLinkText(this: WorkspaceLeaf, linktext, sourcePath, openViewState) {
           return that.openLinkText(next, this, linktext, sourcePath, openViewState);
         }
-    }));
+    });
   }
 
   private async openLinkText(next: OpenLinkTextFn, leaf: WorkspaceLeaf, linktext: string, sourcePath: string, openViewState?: OpenViewState): Promise<void> {

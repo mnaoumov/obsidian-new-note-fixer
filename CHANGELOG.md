@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.12
+
+- Update libs
+
 ## 1.0.11
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.1

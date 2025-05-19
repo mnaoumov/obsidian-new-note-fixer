@@ -1,8 +1,8 @@
 import type { OpenViewState } from 'obsidian';
 
 import {
-  parseLinktext,
   Notice,
+  parseLinktext,
   WorkspaceLeaf
 } from 'obsidian';
 import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';

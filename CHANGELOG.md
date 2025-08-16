@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.16
+
+- Update libs
+
 ## 1.0.15
 
 - Update libs

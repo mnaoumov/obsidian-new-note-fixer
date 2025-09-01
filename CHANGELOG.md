@@ -1,44 +1,48 @@
 # CHANGELOG
 
+## 1.0.19
+
+- Minor changes
+
 ## 1.0.18
 
-- Update libs
+- Minor changes
 
 ## 1.0.17
 
-- Update libs
+- Minor changes
 
 ## 1.0.16
 
-- Update libs
+- Minor changes
 
 ## 1.0.15
 
-- Update libs
+- Minor changes
 
 ## 1.0.14
 
-- Update libs
+- Minor changes
 
 ## 1.0.13
 
-- Update libs
+- Minor changes
 
 ## 1.0.12
 
-- Update libs
+- Minor changes
 
 ## 1.0.11
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.1
+- Minor changes
 
 ## 1.0.10
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.0
+- Minor changes
 
 ## 1.0.9
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.0.1
+- Minor changes
 
 ## 1.0.8
 
@@ -46,29 +50,27 @@
 
 ## 1.0.7
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.2.1
+- Minor changes
 
 ## 1.0.6
 
 - Update template
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/18.4.2
 
 ## 1.0.5
 
-- Lint
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.2.2
+- Minor changes
 
 ## 1.0.4
 
-- Format
+- Minor changes
 
 ## 1.0.3
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/16.1.0
+- Minor changes
 
 ## 1.0.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/15.0.0
+- Minor changes
 
 ## 1.0.1
 

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.0.26
+
+- chore: enable conventional commits
+
 ## 1.0.25
 
 - Minor changes

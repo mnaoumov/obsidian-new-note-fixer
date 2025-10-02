@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.0.27
+
+- fix: build
+- chore: update libs
+
 ## 1.0.26
 
 - chore: enable conventional commits

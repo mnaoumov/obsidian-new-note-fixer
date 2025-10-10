@@ -5,15 +5,35 @@ import {
   parseLinktext,
   WorkspaceLeaf
 } from 'obsidian';
+import {
+  editLinks,
+  generateMarkdownLink
+} from 'obsidian-dev-utils/obsidian/Link';
 import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
-import { join } from 'obsidian-dev-utils/Path';
+import {
+  basename,
+  dirname,
+  join
+} from 'obsidian-dev-utils/Path';
 
 import type { PluginTypes } from './PluginTypes.ts';
+
+import { selectFolder } from './FolderSelector.ts';
+import { PluginSettingsManager } from './PluginSettingsManager.ts';
+import { PluginSettingsTab } from './PluginSettingsTab.ts';
 
 type OpenLinkTextFn = WorkspaceLeaf['openLinkText'];
 
 export class Plugin extends PluginBase<PluginTypes> {
+  protected override createSettingsManager(): PluginSettingsManager {
+    return new PluginSettingsManager(this);
+  }
+
+  protected override createSettingsTab(): PluginSettingsTab {
+    return new PluginSettingsTab(this);
+  }
+
   protected override async onloadImpl(): Promise<void> {
     await super.onloadImpl();
     const that = this;
@@ -27,16 +47,35 @@ export class Plugin extends PluginBase<PluginTypes> {
 
   private async openLinkText(next: OpenLinkTextFn, leaf: WorkspaceLeaf, linktext: string, sourcePath: string, openViewState?: OpenViewState): Promise<void> {
     const { path, subpath } = parseLinktext(linktext);
-    const file = this.app.metadataCache.getFirstLinkpathDest(path, sourcePath);
-    if (file || path.startsWith('/')) {
+    let linkedFile = this.app.metadataCache.getFirstLinkpathDest(path, sourcePath);
+    if (linkedFile) {
       await next.call(leaf, linktext, sourcePath, openViewState);
       return;
     }
 
-    const newFileParent = this.app.fileManager.getNewFileParent(sourcePath, 'dummy.md');
-    const fullPath = join(newFileParent.path, `./${path}`);
+    let fullPath: string;
+    if (path.startsWith('/')) {
+      fullPath = path;
+    } else {
+      const newFileParent = this.app.fileManager.getNewFileParent(sourcePath, 'dummy.md');
+      fullPath = join(newFileParent.path, `./${path}`);
+    }
 
-    if (fullPath.startsWith('../')) {
+    if (fullPath.startsWith('/')) {
+      fullPath = fullPath.slice(1);
+    }
+
+    if (this.settings.shouldPromptForFolderLocation) {
+      let dir = dirname(fullPath);
+      if (dir === '.') {
+        dir = '/';
+      }
+      const folder = await selectFolder(this.app, dir);
+      if (!folder) {
+        return;
+      }
+      fullPath = join(folder.path, basename(fullPath));
+    } else if (fullPath.startsWith('../')) {
       const message = `Wrong relative path: ${path}`;
       new Notice(message);
       console.error(message);
@@ -44,5 +83,21 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     await next.call(leaf, `/${fullPath}${subpath}`, sourcePath, openViewState);
+
+    const createdFile = this.app.metadataCache.getFirstLinkpathDest(fullPath, sourcePath);
+    linkedFile = this.app.metadataCache.getFirstLinkpathDest(path, sourcePath);
+    if (linkedFile !== createdFile && createdFile) {
+      await editLinks(this.app, sourcePath, (link) => {
+        if (link.link !== linktext) {
+          return;
+        }
+        return generateMarkdownLink({
+          app: this.app,
+          originalLink: link.original,
+          sourcePathOrFile: sourcePath,
+          targetPathOrFile: createdFile
+        });
+      });
+    }
   }
 }

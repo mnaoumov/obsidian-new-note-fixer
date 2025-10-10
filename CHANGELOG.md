@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.0.0
+
+- feat: add folder selector
+  - fix #1
+
 ## 1.0.27
 
 - fix: build

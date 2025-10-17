@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.0.1
+
+- chore: update libs
+
 ## 2.0.0
 
 - feat: add folder selector

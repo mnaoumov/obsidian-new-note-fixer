@@ -1,5 +1,9 @@
 # New Note Fixer
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/mnaoumov)
+[![GitHub release](https://img.shields.io/github/v/release/mnaoumov/obsidian-new-note-fixer)](https://github.com/mnaoumov/obsidian-new-note-fixer/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/mnaoumov/obsidian-new-note-fixer/total)](https://github.com/mnaoumov/obsidian-new-note-fixer/releases)
+
 This is a plugin for [Obsidian](https://obsidian.md/) that unifies the way non-existing notes are created when clicking on their links.
 
 When you click on a link `[[non-existing-note]]`, Obsidian creates a new note, whose location depends on `Settings → Files and links → Default location for new notes`.
@@ -37,8 +41,14 @@ For more details, refer to the [documentation](https://github.com/mnaoumov/obsid
 ## Support
 
 <!-- markdownlint-disable MD033 -->
+
 <a href="https://www.buymeacoffee.com/mnaoumov" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60" width="217"></a>
+
 <!-- markdownlint-enable MD033 -->
+
+## My other Obsidian resources
+
+[See my other Obsidian resources](https://github.com/mnaoumov/obsidian-resources).
 
 ## License
 

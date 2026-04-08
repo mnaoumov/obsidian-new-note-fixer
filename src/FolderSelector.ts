@@ -10,7 +10,7 @@ import {
   prepareFuzzySearch,
   sortSearchResults
 } from 'obsidian';
-import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import { invokeAsyncSafely } from 'obsidian-dev-utils/async';
 
 class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
   private isSelected = false;

@@ -9,13 +9,13 @@ import {
   editLinks,
   generateMarkdownLink
 } from 'obsidian-dev-utils/obsidian/Link';
-import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';
-import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
+import { registerPatch } from 'obsidian-dev-utils/obsidian/monkey-around';
+import { PluginBase } from 'obsidian-dev-utils/obsidian/plugin/plugin-base';
 import {
   basename,
   dirname,
   join
-} from 'obsidian-dev-utils/Path';
+} from 'obsidian-dev-utils/path';
 
 import type { PluginTypes } from './PluginTypes.ts';
 

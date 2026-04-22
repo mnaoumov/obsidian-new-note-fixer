@@ -22,8 +22,6 @@ import {
   join
 } from 'obsidian-dev-utils/path';
 
-import type { PluginSettings } from './plugin-settings.ts';
-
 import { selectFolder } from './folder-selector.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
@@ -32,10 +30,6 @@ type OpenLinkTextFn = WorkspaceLeaf['openLinkText'];
 
 export class Plugin extends PluginBase {
   private readonly pluginSettingsComponent: PluginSettingsComponent;
-
-  private get pluginSettings(): PluginSettings {
-    return this.pluginSettingsComponent.settings;
-  }
 
   public constructor(app: App, manifest: PluginManifest) {
     super(app, manifest);
@@ -90,7 +84,7 @@ export class Plugin extends PluginBase {
       fullPath = fullPath.slice(1);
     }
 
-    if (this.pluginSettings.shouldPromptForFolderLocation) {
+    if (this.pluginSettingsComponent.settings.shouldPromptForFolderLocation) {
       let dir = dirname(fullPath);
       if (dir === '.') {
         dir = '/';

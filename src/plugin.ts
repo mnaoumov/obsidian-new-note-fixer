@@ -1,4 +1,8 @@
-import type { OpenViewState } from 'obsidian';
+import type {
+  App,
+  OpenViewState,
+  PluginManifest
+} from 'obsidian';
 
 import {
   Notice,
@@ -10,28 +14,47 @@ import {
   generateMarkdownLink
 } from 'obsidian-dev-utils/obsidian/link';
 import { registerPatch } from 'obsidian-dev-utils/obsidian/monkey-around';
-import { PluginBase } from 'obsidian-dev-utils/obsidian/plugin/plugin-base';
+import { PluginSettingsTabComponent } from 'obsidian-dev-utils/obsidian/plugin/components/plugin-settings-tab-component';
+import { PluginBase } from 'obsidian-dev-utils/obsidian/plugin/plugin';
 import {
   basename,
   dirname,
   join
 } from 'obsidian-dev-utils/path';
 
-import type { PluginTypes } from './PluginTypes.ts';
+import type { PluginSettings } from './plugin-settings.ts';
 
-import { selectFolder } from './FolderSelector.ts';
-import { PluginSettingsManager } from './PluginSettingsManager.ts';
-import { PluginSettingsTab } from './PluginSettingsTab.ts';
+import { selectFolder } from './folder-selector.ts';
+import { PluginSettingsComponent } from './plugin-settings-component.ts';
+import { PluginSettingsTab } from './plugin-settings-tab.ts';
 
 type OpenLinkTextFn = WorkspaceLeaf['openLinkText'];
 
-export class Plugin extends PluginBase<PluginTypes> {
-  protected override createSettingsManager(): PluginSettingsManager {
-    return new PluginSettingsManager(this);
+export class Plugin extends PluginBase {
+  private readonly pluginSettingsComponent: PluginSettingsComponent;
+
+  private get pluginSettings(): PluginSettings {
+    return this.pluginSettingsComponent.settings;
   }
 
-  protected override createSettingsTab(): PluginSettingsTab {
-    return new PluginSettingsTab(this);
+  public constructor(app: App, manifest: PluginManifest) {
+    super(app, manifest);
+    this.pluginSettingsComponent = this.registerComponent({
+      component: new PluginSettingsComponent({
+        loadData: this.loadData.bind(this),
+        saveData: this.saveData.bind(this)
+      }),
+      shouldPreload: true
+    });
+    this.registerComponent({
+      component: new PluginSettingsTabComponent(
+        this,
+        new PluginSettingsTab({
+          plugin: this,
+          pluginSettingsComponent: this.pluginSettingsComponent
+        })
+      )
+    });
   }
 
   protected override async onloadImpl(): Promise<void> {
@@ -39,9 +62,11 @@ export class Plugin extends PluginBase<PluginTypes> {
     const that = this;
     registerPatch(this, WorkspaceLeaf.prototype, {
       openLinkText: (next: OpenLinkTextFn): OpenLinkTextFn =>
+        /* v8 ignore start -- inner function is called by Obsidian's monkey-patch runtime, not testable in unit tests. */
         function openLinkText(this: WorkspaceLeaf, linktext, sourcePath, openViewState) {
           return that.openLinkText(next, this, linktext, sourcePath, openViewState);
         }
+      /* v8 ignore stop */
     });
   }
 
@@ -65,7 +90,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       fullPath = fullPath.slice(1);
     }
 
-    if (this.settings.shouldPromptForFolderLocation) {
+    if (this.pluginSettings.shouldPromptForFolderLocation) {
       let dir = dirname(fullPath);
       if (dir === '.') {
         dir = '/';

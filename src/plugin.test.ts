@@ -1,5 +1,5 @@
 import type { TFolder } from 'obsidian';
-import type { RegisterComponentParams } from 'obsidian-dev-utils/obsidian/plugin/plugin';
+import type { Component } from 'obsidian';
 
 import {
   afterEach,
@@ -9,7 +9,7 @@ import {
   vi
 } from 'vitest';
 
-const registeredComponents: RegisterComponentParams[] = [];
+const addedChildren: Component[] = [];
 
 const hoisted = vi.hoisted(() => ({
   mockBasename: vi.fn(),
@@ -45,9 +45,9 @@ const PluginBaseMock = vi.hoisted(() =>
       /* Base no-op */
     }
 
-    protected registerComponent(params: RegisterComponentParams): unknown {
-      registeredComponents.push(params);
-      return params.component;
+    protected addChild<T extends Component>(child: T): T {
+      addedChildren.push(child);
+      return child;
     }
   }
 );
@@ -141,12 +141,12 @@ function createPlugin(settingsOverrides?: SettingsOverrides): Plugin {
   };
   const mockManifest = { id: 'new-note-fixer' };
 
-  registeredComponents.length = 0;
+  addedChildren.length = 0;
   const plugin = new Plugin(mockApp as never, mockManifest as never);
 
   if (settingsOverrides) {
     // eslint-disable-next-line no-restricted-syntax -- test helper needs double assertion to cast Component to mock type.
-    const settingsComponent = registeredComponents.at(0)?.component as unknown as MockSettingsComponent | undefined;
+    const settingsComponent = addedChildren.at(0) as unknown as MockSettingsComponent | undefined;
     if (settingsComponent) {
       Object.assign(settingsComponent.settings, settingsOverrides);
     }
@@ -166,28 +166,12 @@ describe('Plugin', () => {
     vi.clearAllMocks();
   });
 
-  it('should register two components', () => {
-    registeredComponents.length = 0;
+  it('should add two child components', () => {
+    addedChildren.length = 0;
     new Plugin({} as never, { id: 'test' } as never);
 
     const EXPECTED_COMPONENT_COUNT = 2;
-    expect(registeredComponents).toHaveLength(EXPECTED_COMPONENT_COUNT);
-  });
-
-  it('should register PluginSettingsComponent with shouldPreload true', () => {
-    registeredComponents.length = 0;
-    new Plugin({} as never, { id: 'test' } as never);
-
-    const settingsComponent = registeredComponents.at(0);
-    expect(settingsComponent?.shouldPreload).toBe(true);
-  });
-
-  it('should register PluginSettingsTabComponent without shouldPreload', () => {
-    registeredComponents.length = 0;
-    new Plugin({} as never, { id: 'test' } as never);
-
-    const tabComponent = registeredComponents.at(1);
-    expect(tabComponent?.shouldPreload).toBeUndefined();
+    expect(addedChildren).toHaveLength(EXPECTED_COMPONENT_COUNT);
   });
 
   it('should call registerPatch in onloadImpl', async () => {

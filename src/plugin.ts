@@ -21,6 +21,7 @@ import {
   dirname,
   join
 } from 'obsidian-dev-utils/path';
+import { PluginDataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
 
 import { selectFolder } from './folder-selector.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
@@ -33,19 +34,14 @@ export class Plugin extends PluginBase {
 
   public constructor(app: App, manifest: PluginManifest) {
     super(app, manifest);
-    this.pluginSettingsComponent = this.registerComponent({
-      component: new PluginSettingsComponent(this),
-      shouldPreload: true
-    });
-    this.registerComponent({
-      component: new PluginSettingsTabComponent(
-        this,
-        new PluginSettingsTab({
-          plugin: this,
-          pluginSettingsComponent: this.pluginSettingsComponent
-        })
-      )
-    });
+    this.pluginSettingsComponent = this.addChild(new PluginSettingsComponent(new PluginDataHandler(this)));
+    this.addChild(new PluginSettingsTabComponent({
+      plugin: this,
+      pluginSettingsTab: new PluginSettingsTab({
+        plugin: this,
+        pluginSettingsComponent: this.pluginSettingsComponent
+      })
+    }));
   }
 
   protected override async onloadImpl(): Promise<void> {

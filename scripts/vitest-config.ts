@@ -16,6 +16,11 @@ export const config = defineConfig({
     include: ['src/**/*.test.ts'],
     projects: [
       {
+        server: {
+          deps: {
+            inline: ['@obsidian-typings', 'obsidian-dev-utils']
+          }
+        },
         test: {
           environment: 'node',
           include: ['src/**/*.test.ts'],

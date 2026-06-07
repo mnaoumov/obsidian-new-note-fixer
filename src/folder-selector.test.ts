@@ -1,8 +1,10 @@
 import type {
+  App,
   FuzzyMatch,
   TFolder
 } from 'obsidian';
 
+import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
   afterEach,
   describe,
@@ -46,22 +48,22 @@ interface MockVault {
 
 interface ModalCapture {
   instance: ModalInstance;
-  resolve: (folder: null | TFolder) => void;
+  resolve(folder: null | TFolder): void;
 }
 
 interface ModalInstance {
   app: unknown;
   chooser: MockChooser;
-  getItems: () => TFolder[];
-  getItemText: (item: null | TFolder) => string;
-  getSuggestions: (query: string) => FuzzyMatch<null | TFolder>[];
+  getItems(): TFolder[];
+  getItemText(item: null | TFolder): string;
+  getSuggestions(query: string): FuzzyMatch<null | TFolder>[];
   inputEl: MockInputEl;
-  onChooseItem: (item: null | TFolder) => void;
-  onClose: () => void;
-  onNoSuggestion: () => void;
-  onOpen: () => void;
-  renderSuggestion: (item: FuzzyMatch<null | TFolder>, el: HTMLElement) => void;
-  selectSuggestion: (value: FuzzyMatch<null | TFolder>, evt: KeyboardEvent | MouseEvent) => void;
+  onChooseItem(item: null | TFolder): void;
+  onClose(): void;
+  onNoSuggestion(): void;
+  onOpen(): void;
+  renderSuggestion(item: FuzzyMatch<null | TFolder>, el: HTMLElement): void;
+  selectSuggestion(value: FuzzyMatch<null | TFolder>, evt: KeyboardEvent | MouseEvent): void;
   setPlaceholder: ReturnType<typeof vi.fn>;
   updateSuggestions: ReturnType<typeof vi.fn>;
 }
@@ -129,15 +131,15 @@ vi.mock('obsidian-dev-utils/async', () => ({
 import { selectFolder } from './folder-selector.ts';
 
 function createModal(initialQuery: string): CreateModalResult {
-  const mockApp = {
-    vault: {
+  const mockApp = strictProxy<App>({
+    vault: strictProxy<App['vault']>({
       createFolder: vi.fn(),
       getAllFolders: vi.fn().mockReturnValue(mockFolders)
-    }
-  };
+    })
+  });
 
   lastCapture = undefined;
-  const promise = selectFolder(mockApp as never, initialQuery);
+  const promise = selectFolder(mockApp, initialQuery);
 
   // SelectFolder synchronously sets lastCapture via the mock open() method
   const capture = lastCapture as ModalCapture | undefined;
@@ -325,6 +327,17 @@ describe('FolderSelectorModal.getSuggestions', () => {
     lastCapture?.resolve(null);
   });
 
+  it('should sort combined matches from multi-word queries', () => {
+    mockSearchFn.mockReturnValue({ matches: [[0, 3]], score: -1 });
+
+    const { instance } = createModal('/');
+
+    const results = instance.getSuggestions('notes daily');
+
+    expect(results.length).toBeGreaterThan(0);
+    lastCapture?.resolve(null);
+  });
+
   it('should not include unmatched folders', () => {
     mockSearchFn.mockReturnValue(null);
 
@@ -440,15 +453,15 @@ describe('FolderSelectorModal.renderSuggestion', () => {
   it('should return early for non-null item', () => {
     const { instance } = createModal('/');
 
-    const el = {
+    const el = strictProxy<HTMLElement>({
       addClass: vi.fn(),
       createDiv: vi.fn(),
       empty: vi.fn()
-    };
+    });
 
     // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
     const match = { item: { path: 'notes' } as TFolder, match: { matches: [], score: 0 } };
-    instance.renderSuggestion(match, el as never);
+    instance.renderSuggestion(match, el);
 
     expect(el.addClass).not.toHaveBeenCalled();
     lastCapture?.resolve(null);
@@ -457,18 +470,18 @@ describe('FolderSelectorModal.renderSuggestion', () => {
   it('should render create UI for null item', () => {
     const { instance } = createModal('/');
 
-    const mockContentDiv = { createDiv: vi.fn() };
-    const mockAuxDiv = { createSpan: vi.fn() };
-    const el = {
+    const mockContentDiv = strictProxy<HTMLDivElement>({ createDiv: vi.fn() });
+    const mockAuxDiv = strictProxy<HTMLDivElement>({ createSpan: vi.fn() });
+    const el = strictProxy<HTMLElement>({
       addClass: vi.fn(),
       createDiv: vi.fn().mockReturnValueOnce(mockContentDiv).mockReturnValueOnce(mockAuxDiv),
       empty: vi.fn()
-    };
+    });
 
     instance.inputEl.value = 'new-folder';
 
     const match = { item: null, match: { matches: [], score: 0 } };
-    instance.renderSuggestion(match, el as never);
+    instance.renderSuggestion(match, el);
 
     expect(el.addClass).toHaveBeenCalledWith('suggestion-item', 'mod-complex');
     expect(el.empty).toHaveBeenCalled();

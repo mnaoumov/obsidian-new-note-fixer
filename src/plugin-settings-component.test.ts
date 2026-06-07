@@ -1,3 +1,7 @@
+import type { DataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
+import type { PluginEventSource } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
+
+import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
   describe,
   expect,
@@ -5,10 +9,16 @@ import {
   vi
 } from 'vitest';
 
+interface MockConstructorParams {
+  readonly pluginSettingsClass: new () => unknown;
+}
+
 const PluginSettingsComponentBaseMock = vi.hoisted(() =>
   class {
-    protected createDefaultSettings(): unknown {
-      return undefined;
+    public readonly defaultSettings: unknown;
+
+    public constructor(params: MockConstructorParams) {
+      this.defaultSettings = new params.pluginSettingsClass();
     }
   }
 );
@@ -28,8 +38,11 @@ import { PluginSettingsComponent } from './plugin-settings-component.ts';
 
 describe('PluginSettingsComponent', () => {
   it('should create default settings', () => {
-    const component = new PluginSettingsComponent(null as never);
-    const settings = component['createDefaultSettings']();
+    const component = new PluginSettingsComponent({
+      dataHandler: strictProxy<DataHandler>({}),
+      pluginEventSource: strictProxy<PluginEventSource>({})
+    });
+    const settings = component.defaultSettings;
 
     expect(settings).toBeDefined();
     expect(settings.shouldPromptForFolderLocation).toBe(false);

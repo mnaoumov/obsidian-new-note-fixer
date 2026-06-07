@@ -9,19 +9,20 @@ import {
   parseLinktext,
   WorkspaceLeaf
 } from 'obsidian';
+import { MonkeyAroundComponent } from 'obsidian-dev-utils/obsidian/components/monkey-around-component';
+import { PluginSettingsTabComponent } from 'obsidian-dev-utils/obsidian/components/plugin-settings-tab-component';
+import { PluginDataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
 import {
   editLinks,
   generateMarkdownLink
 } from 'obsidian-dev-utils/obsidian/link';
-import { registerPatch } from 'obsidian-dev-utils/obsidian/monkey-around';
-import { PluginSettingsTabComponent } from 'obsidian-dev-utils/obsidian/components/plugin-settings-tab-component';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/plugin/plugin';
+import { PluginEventSourceImpl } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
 import {
   basename,
   dirname,
   join
 } from 'obsidian-dev-utils/path';
-import { PluginDataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
 
 import { selectFolder } from './folder-selector.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
@@ -30,24 +31,33 @@ import { PluginSettingsTab } from './plugin-settings-tab.ts';
 type OpenLinkTextFn = WorkspaceLeaf['openLinkText'];
 
 export class Plugin extends PluginBase {
+  private readonly monkeyAroundComponent: MonkeyAroundComponent;
   private readonly pluginSettingsComponent: PluginSettingsComponent;
 
   public constructor(app: App, manifest: PluginManifest) {
     super(app, manifest);
-    this.pluginSettingsComponent = this.addChild(new PluginSettingsComponent(new PluginDataHandler(this)));
-    this.addChild(new PluginSettingsTabComponent({
-      plugin: this,
-      pluginSettingsTab: new PluginSettingsTab({
-        plugin: this,
-        pluginSettingsComponent: this.pluginSettingsComponent
+    this.monkeyAroundComponent = this.addChild(new MonkeyAroundComponent());
+    this.pluginSettingsComponent = this.addChild(
+      new PluginSettingsComponent({
+        dataHandler: new PluginDataHandler(this),
+        pluginEventSource: new PluginEventSourceImpl(this)
       })
-    }));
+    );
+    this.addChild(
+      new PluginSettingsTabComponent({
+        plugin: this,
+        pluginSettingsTab: new PluginSettingsTab({
+          plugin: this,
+          pluginSettingsComponent: this.pluginSettingsComponent
+        })
+      })
+    );
   }
 
-  protected override async onloadImpl(): Promise<void> {
-    await super.onloadImpl();
+  public override async onload(): Promise<void> {
+    await super.onload();
     const that = this;
-    registerPatch(this, WorkspaceLeaf.prototype, {
+    this.monkeyAroundComponent.registerPatch(WorkspaceLeaf.prototype, {
       openLinkText: (next: OpenLinkTextFn): OpenLinkTextFn =>
         /* v8 ignore start -- inner function is called by Obsidian's monkey-patch runtime, not testable in unit tests. */
         function openLinkText(this: WorkspaceLeaf, linktext, sourcePath, openViewState) {

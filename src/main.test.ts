@@ -26,9 +26,18 @@ vi.mock('obsidian-dev-utils/obsidian/setting-ex', () => ({
 }));
 
 vi.mock('obsidian', () => ({
+  Component: vi.fn(),
   FuzzySuggestModal: vi.fn(),
   Notice: vi.fn(),
   WorkspaceLeaf: vi.fn()
+}));
+
+vi.mock('obsidian-dev-utils/obsidian/components/monkey-around-component', () => ({
+  MonkeyAroundComponent: vi.fn()
+}));
+
+vi.mock('obsidian-dev-utils/obsidian/data-handler', () => ({
+  PluginDataHandler: vi.fn()
 }));
 
 vi.mock('obsidian-dev-utils/obsidian/link', () => ({
@@ -36,8 +45,8 @@ vi.mock('obsidian-dev-utils/obsidian/link', () => ({
   generateMarkdownLink: vi.fn()
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/monkey-around', () => ({
-  registerPatch: vi.fn()
+vi.mock('obsidian-dev-utils/obsidian/plugin/plugin-event-source', () => ({
+  PluginEventSourceImpl: vi.fn()
 }));
 
 vi.mock('obsidian-dev-utils/path', () => ({

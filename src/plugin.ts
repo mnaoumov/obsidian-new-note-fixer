@@ -1,7 +1,5 @@
 import type { OpenViewState } from 'obsidian';
 
-import { ValueWrapper } from 'obsidian-dev-utils/value-wrapper';
-
 import {
   Notice,
   parseLinktext,
@@ -21,6 +19,8 @@ import {
   dirname,
   join
 } from 'obsidian-dev-utils/path';
+import { ensureNonNullable } from 'obsidian-dev-utils/type-guards';
+import { ValueWrapper } from 'obsidian-dev-utils/value-wrapper';
 
 import { selectFolder } from './folder-selector.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
@@ -29,29 +29,29 @@ import { PluginSettingsTab } from './plugin-settings-tab.ts';
 type OpenLinkTextFn = WorkspaceLeaf['openLinkText'];
 
 export class Plugin extends PluginBase {
-  private monkeyAroundComponent!: MonkeyAroundComponent;
-  private pluginSettingsComponent!: PluginSettingsComponent;
+  private pluginSettingsComponent?: PluginSettingsComponent;
 
   protected override onloadImpl(): void {
-    this.monkeyAroundComponent = this.addChild(new MonkeyAroundComponent());
-    this.pluginSettingsComponent = this.addChild(
+    const monkeyAroundComponent = this.addChild(new MonkeyAroundComponent());
+    const pluginSettingsComponent = this.addChild(
       new PluginSettingsComponent({
         dataHandler: new PluginDataHandler(this),
         pluginEventSource: new PluginEventSourceImpl(this)
       })
     );
+    this.pluginSettingsComponent = pluginSettingsComponent;
     this.addChild(
       new PluginSettingsTabComponent({
         plugin: this,
         pluginSettingsTab: new PluginSettingsTab({
           plugin: this,
-          pluginSettingsComponent: this.pluginSettingsComponent
+          pluginSettingsComponent
         })
       })
     );
 
     const thisWrapper = ValueWrapper.of(this);
-    this.monkeyAroundComponent.registerPatch(WorkspaceLeaf.prototype, {
+    monkeyAroundComponent.registerPatch(WorkspaceLeaf.prototype, {
       openLinkText: (next: OpenLinkTextFn): OpenLinkTextFn =>
         /* v8 ignore start -- inner function is called by Obsidian's monkey-patch runtime, not testable in unit tests. */
         function openLinkText(this: WorkspaceLeaf, linktext, sourcePath, openViewState) {
@@ -81,7 +81,7 @@ export class Plugin extends PluginBase {
       fullPath = fullPath.slice(1);
     }
 
-    if (this.pluginSettingsComponent.settings.shouldPromptForFolderLocation) {
+    if (ensureNonNullable(this.pluginSettingsComponent).settings.shouldPromptForFolderLocation) {
       let dir = dirname(fullPath);
       if (dir === '.') {
         dir = '/';

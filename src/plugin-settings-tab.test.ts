@@ -1,103 +1,72 @@
 import type { Plugin } from 'obsidian';
+import type { DataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
+import type { PluginEventSource } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
 
+import {
+  App,
+  Setting
+} from 'obsidian';
+import { castTo } from 'obsidian-dev-utils/object-utils';
+import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/plugin/plugin-settings-tab';
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
+  afterEach,
+  beforeEach,
   describe,
   expect,
   it,
   vi
 } from 'vitest';
 
-import type { PluginSettingsComponent } from './plugin-settings-component.ts';
-
-interface MockSettingInstance {
-  addToggle: ReturnType<typeof vi.fn>;
-  setDesc(desc: string): MockSettingInstance;
-  setName(name: string): MockSettingInstance;
-}
-
-const settingInstances: MockSettingInstance[] = [];
-
-const hoisted = vi.hoisted(() => {
-  const keys: string[] = [];
-
-  class PluginSettingsTabBaseMock {
-    public containerEl = {};
-
-    public bind(_component: unknown, key: string): void {
-      keys.push(key);
-    }
-
-    public display(): void {
-      /* Base implementation */
-    }
-  }
-
-  return { keys, PluginSettingsTabBaseMock };
-});
-
-vi.mock('obsidian-dev-utils/obsidian/setting-ex', () => ({
-  SettingEx: class MockSettingEx {
-    public addToggle = vi.fn().mockImplementation(function addToggleMock(this: MockSettingInstance, cb: (toggle: unknown) => void) {
-      cb({ mockToggle: true });
-      return this;
-    });
-
-    public setDesc = vi.fn().mockReturnThis();
-    public setName = vi.fn().mockReturnThis();
-
-    public constructor() {
-      settingInstances.push(this);
-    }
-  }
-}));
-
-vi.mock('obsidian-dev-utils/obsidian/plugin/plugin-settings-tab', () => ({
-  PluginSettingsTabBase: hoisted.PluginSettingsTabBaseMock
-}));
-
-// eslint-disable-next-line import-x/first, import-x/imports-first -- vi.mock must precede imports.
+import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
 
+interface AppStatics {
+  createConfigured__(): App;
+}
+
+function createTab(): PluginSettingsTab {
+  const app = castTo<AppStatics>(App).createConfigured__();
+  const plugin = strictProxy<Plugin>({ app });
+  const pluginSettingsComponent = new PluginSettingsComponent({
+    dataHandler: strictProxy<DataHandler>({}),
+    pluginEventSource: strictProxy<PluginEventSource>({})
+  });
+  return new PluginSettingsTab({ plugin, pluginSettingsComponent });
+}
+
 describe('PluginSettingsTab', () => {
-  it('should create one toggle setting on display', () => {
-    settingInstances.length = 0;
-
-    const tab = new PluginSettingsTab({ plugin: strictProxy<Plugin>({}), pluginSettingsComponent: strictProxy<PluginSettingsComponent>({}) });
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.displayLegacy();
-
-    expect(settingInstances).toHaveLength(1);
+  beforeEach(() => {
+    /*
+     * The real `bind` duck-types the value component via a strict-proxy probe (`setPlaceholderValue`),
+     * which throws on the non-text toggle. `bind` is exercised by dev-utils' own tests, so stubbing its
+     * return value (a passthrough) is an allowed double, not a re-implementation.
+     */
+    vi.spyOn(PluginSettingsTabBase.prototype, 'bind').mockImplementation((valueComponent) => valueComponent);
   });
 
-  it('should set correct name for the setting', () => {
-    settingInstances.length = 0;
-
-    const tab = new PluginSettingsTab({ plugin: strictProxy<Plugin>({}), pluginSettingsComponent: strictProxy<PluginSettingsComponent>({}) });
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.displayLegacy();
-
-    expect(settingInstances.at(0)?.setName).toHaveBeenCalledWith('Should prompt for folder location');
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  it('should set correct description for the setting', () => {
-    settingInstances.length = 0;
+  it('should render a single toggle setting with the expected name and description', () => {
+    const setNameSpy = vi.spyOn(Setting.prototype, 'setName');
+    const setDescSpy = vi.spyOn(Setting.prototype, 'setDesc');
+    const addToggleSpy = vi.spyOn(Setting.prototype, 'addToggle');
 
-    const tab = new PluginSettingsTab({ plugin: strictProxy<Plugin>({}), pluginSettingsComponent: strictProxy<PluginSettingsComponent>({}) });
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
+    const tab = createTab();
     tab.displayLegacy();
 
-    expect(settingInstances.at(0)?.setDesc).toHaveBeenCalledWith('Whether to prompt for the folder location when creating a new note');
+    expect(setNameSpy).toHaveBeenCalledWith('Should prompt for folder location');
+    expect(setDescSpy).toHaveBeenCalledWith('Whether to prompt for the folder location when creating a new note');
+    expect(addToggleSpy).toHaveBeenCalledOnce();
   });
 
-  it('should bind shouldPromptForFolderLocation via addToggle callback', () => {
-    settingInstances.length = 0;
-    hoisted.keys.length = 0;
-
-    const tab = new PluginSettingsTab({ plugin: strictProxy<Plugin>({}), pluginSettingsComponent: strictProxy<PluginSettingsComponent>({}) });
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
+  it('should bind the toggle to shouldPromptForFolderLocation', () => {
+    const tab = createTab();
     tab.displayLegacy();
 
-    expect(hoisted.keys).toContain('shouldPromptForFolderLocation');
+    const boundKeys = vi.mocked(PluginSettingsTabBase.prototype.bind).mock.calls.map((call) => call[1]);
+    expect(boundKeys).toContain('shouldPromptForFolderLocation');
   });
 });

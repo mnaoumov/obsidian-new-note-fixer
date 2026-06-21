@@ -1,10 +1,14 @@
 import type {
   App,
-  Component,
+  OpenViewState,
+  PluginManifest,
   TFolder,
   WorkspaceLeaf
 } from 'obsidian';
 
+import { WorkspaceLeaf as WorkspaceLeafClass } from 'obsidian';
+import { noop } from 'obsidian-dev-utils/function';
+import { castTo } from 'obsidian-dev-utils/object-utils';
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
   afterEach,
@@ -14,168 +18,107 @@ import {
   vi
 } from 'vitest';
 
-const addedChildren: Component[] = [];
-
 const hoisted = vi.hoisted(() => ({
-  mockBasename: vi.fn(),
-  mockDirname: vi.fn(),
   mockEditLinks: vi.fn(),
   mockGenerateMarkdownLink: vi.fn(),
-  mockJoin: vi.fn(),
-  mockMonkeyAroundRegisterPatch: vi.fn(),
   mockNotice: vi.fn(),
-  mockParseLinktext: vi.fn(),
+  mockRegisterPatch: vi.fn(),
   mockSelectFolder: vi.fn()
 }));
 
-const PluginBaseMock = vi.hoisted(() =>
-  class {
-    public app: unknown;
-    public manifest: unknown;
-
-    public constructor(app: unknown, manifest: unknown) {
-      this.app = app;
-      this.manifest = manifest;
-    }
-
-    public loadData(): unknown {
-      return undefined;
-    }
-
-    public async onload(): Promise<void> {
-      /* Base no-op */
-    }
-
-    public saveData(): unknown {
-      return undefined;
-    }
-
-    protected addChild<T extends Component>(child: T): T {
-      addedChildren.push(child);
-      return child;
-    }
-  }
-);
-
-vi.mock('obsidian-dev-utils/obsidian/plugin/plugin', () => ({
-  PluginBase: PluginBaseMock
-}));
-
-vi.mock('obsidian-dev-utils/obsidian/components/plugin-settings-tab-component', () => ({
-  PluginSettingsTabComponent: class MockPluginSettingsTabComponent {
-    public constructor(public plugin: unknown, public tab: unknown) {}
-  }
+vi.mock('obsidian', async (importOriginal) => ({
+  ...await importOriginal<typeof import('obsidian')>(),
+  Notice: hoisted.mockNotice
 }));
 
 vi.mock('obsidian-dev-utils/obsidian/components/monkey-around-component', () => ({
   MonkeyAroundComponent: class MockMonkeyAroundComponent {
-    public registerPatch = hoisted.mockMonkeyAroundRegisterPatch;
+    public registerPatch = hoisted.mockRegisterPatch;
   }
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/components/plugin-settings-component', () => ({
-  PluginSettingsComponentBase: class MockPluginSettingsComponentBase {
+vi.mock('obsidian-dev-utils/obsidian/components/plugin-settings-tab-component', () => ({
+  PluginSettingsTabComponent: vi.fn()
+}));
+
+vi.mock('obsidian-dev-utils/obsidian/data-handler', () => ({
+  PluginDataHandler: vi.fn()
+}));
+
+vi.mock('obsidian-dev-utils/obsidian/link', () => ({
+  editLinks: hoisted.mockEditLinks,
+  generateMarkdownLink: hoisted.mockGenerateMarkdownLink
+}));
+
+vi.mock('obsidian-dev-utils/obsidian/plugin/plugin-event-source', () => ({
+  PluginEventSourceImpl: vi.fn()
+}));
+
+vi.mock('./folder-selector.ts', () => ({
+  selectFolder: hoisted.mockSelectFolder
+}));
+
+vi.mock('./plugin-settings-component.ts', () => ({
+  PluginSettingsComponent: class MockPluginSettingsComponent {
     public settings = { shouldPromptForFolderLocation: false };
   }
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/plugin/plugin-event-source', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-extraneous-class -- mock class must exist for constructor call.
-  PluginEventSourceImpl: class MockPluginEventSourceImpl {}
+vi.mock('./plugin-settings-tab.ts', () => ({
+  PluginSettingsTab: vi.fn()
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/plugin/plugin-settings-tab', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-extraneous-class -- mock class must exist for extends.
-  PluginSettingsTabBase: class MockPluginSettingsTabBase {}
-}));
-
-vi.mock('obsidian-dev-utils/obsidian/setting-ex', () => ({
-  SettingEx: vi.fn()
-}));
-
-vi.mock('obsidian', () => ({
-  FuzzySuggestModal: vi.fn(),
-  Notice: hoisted.mockNotice,
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  parseLinktext: (...args: unknown[]) => hoisted.mockParseLinktext(...args),
-  // eslint-disable-next-line @typescript-eslint/no-extraneous-class -- mock class must exist for prototype access.
-  WorkspaceLeaf: class MockWorkspaceLeaf {}
-}));
-
-vi.mock('obsidian-dev-utils/obsidian/link', () => ({
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  editLinks: (...args: unknown[]) => hoisted.mockEditLinks(...args),
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  generateMarkdownLink: (...args: unknown[]) => hoisted.mockGenerateMarkdownLink(...args)
-}));
-
-vi.mock('obsidian-dev-utils/obsidian/data-handler', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-extraneous-class -- mock class must exist for constructor call.
-  PluginDataHandler: class MockPluginDataHandler {}
-}));
-
-vi.mock('obsidian-dev-utils/path', () => ({
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  basename: (...args: unknown[]) => hoisted.mockBasename(...args),
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  dirname: (...args: unknown[]) => hoisted.mockDirname(...args),
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  join: (...args: unknown[]) => hoisted.mockJoin(...args)
-}));
-
-vi.mock('obsidian-dev-utils/async', () => ({
-  invokeAsyncSafely: vi.fn()
-}));
-
-vi.mock('./folder-selector.ts', () => ({
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  selectFolder: (...args: unknown[]) => hoisted.mockSelectFolder(...args)
-}));
-
-// eslint-disable-next-line import-x/first, import-x/imports-first -- vi.mock must precede imports.
+// eslint-disable-next-line import-x/first, import-x/imports-first -- vi.mock must precede the SUT import.
 import { Plugin } from './plugin.ts';
 
-interface MockMetadataCache {
-  getFirstLinkpathDest: App['metadataCache']['getFirstLinkpathDest'] & ReturnType<typeof vi.fn>;
+interface CreatePluginOptions {
+  readonly getFirstLinkpathDest?: App['metadataCache']['getFirstLinkpathDest'];
+  readonly newFileParentPath?: string;
+  readonly shouldPromptForFolderLocation?: boolean;
 }
 
-interface MockSettingsComponent {
-  settings: Record<string, unknown>;
+interface CreatePluginResult {
+  readonly internals: PluginInternals;
+  readonly plugin: Plugin;
 }
 
-interface SettingsOverrides {
-  shouldPromptForFolderLocation?: boolean;
+interface LinkInfo {
+  link: string;
+  original: string;
 }
 
-function createPlugin(settingsOverrides?: SettingsOverrides): Plugin {
-  const mockApp = strictProxy<App>({
+type OpenLinkTextFn = WorkspaceLeaf['openLinkText'];
+
+interface PluginInternals {
+  onloadImpl(): void;
+  openLinkText(next: OpenLinkTextFn, leaf: WorkspaceLeaf, linktext: string, sourcePath: string, openViewState?: OpenViewState): Promise<void>;
+  pluginSettingsComponent: SettingsComponentStub;
+}
+
+interface SettingsComponentStub {
+  settings: SettingsStub;
+}
+
+interface SettingsStub {
+  shouldPromptForFolderLocation: boolean;
+}
+
+const DEFAULT_NEW_FILE_PARENT_PATH = 'notes';
+
+function createPlugin(options: CreatePluginOptions = {}): CreatePluginResult {
+  const getFirstLinkpathDest = options.getFirstLinkpathDest ?? vi.fn().mockReturnValue(null);
+  const app = strictProxy<App>({
     fileManager: strictProxy<App['fileManager']>({
-      getNewFileParent: vi.fn().mockReturnValue({ path: 'notes' })
+      getNewFileParent: vi.fn().mockReturnValue({ path: options.newFileParentPath ?? DEFAULT_NEW_FILE_PARENT_PATH })
     }),
     metadataCache: strictProxy<App['metadataCache']>({
-      getFirstLinkpathDest: vi.fn().mockReturnValue(null)
+      getFirstLinkpathDest
     })
   });
-  const mockManifest = { author: '', description: '', id: 'new-note-fixer', minAppVersion: '0.0.0', name: 'new-note-fixer', version: '0.0.0' };
-
-  addedChildren.length = 0;
-  const plugin = new Plugin(mockApp, mockManifest);
-
-  if (settingsOverrides) {
-    const SETTINGS_COMPONENT_INDEX = 1;
-    // eslint-disable-next-line no-restricted-syntax -- test helper needs double assertion to cast Component to mock type.
-    const settingsComponent = addedChildren.at(SETTINGS_COMPONENT_INDEX) as unknown as MockSettingsComponent | undefined;
-    if (settingsComponent) {
-      Object.assign(settingsComponent.settings, settingsOverrides);
-    }
-  }
-
-  return plugin;
-}
-
-function setMetadataCache(plugin: Plugin, metadataCache: MockMetadataCache): void {
-  // eslint-disable-next-line no-restricted-syntax -- test helper needs dynamic property assignment on mock app.
-  (plugin.app as unknown as Record<string, unknown>)['metadataCache'] = strictProxy<App['metadataCache']>(metadataCache);
+  const plugin = new Plugin(app, strictProxy<PluginManifest>({ id: 'test', name: 'test' }));
+  const internals = castTo<PluginInternals>(plugin);
+  internals.pluginSettingsComponent = { settings: { shouldPromptForFolderLocation: options.shouldPromptForFolderLocation ?? false } };
+  return { internals, plugin };
 }
 
 describe('Plugin', () => {
@@ -184,19 +127,15 @@ describe('Plugin', () => {
     vi.clearAllMocks();
   });
 
-  it('should add three child components', () => {
-    addedChildren.length = 0;
-    new Plugin(strictProxy<App>({}), { author: '', description: '', id: 'test', minAppVersion: '0.0.0', name: 'test', version: '0.0.0' });
+  it('should add three children and patch WorkspaceLeaf.openLinkText in onloadImpl', () => {
+    const plugin = new Plugin(strictProxy<App>({}), strictProxy<PluginManifest>({ id: 'test', name: 'test' }));
+    const addChildSpy = vi.spyOn(plugin, 'addChild');
 
-    const EXPECTED_COMPONENT_COUNT = 3;
-    expect(addedChildren).toHaveLength(EXPECTED_COMPONENT_COUNT);
-  });
+    castTo<PluginInternals>(plugin).onloadImpl();
 
-  it('should register monkey patch in onload', async () => {
-    const plugin = new Plugin(strictProxy<App>({}), { author: '', description: '', id: 'test', minAppVersion: '0.0.0', name: 'test', version: '0.0.0' });
-    await plugin.onload();
-
-    expect(hoisted.mockMonkeyAroundRegisterPatch).toHaveBeenCalled();
+    const EXPECTED_CHILD_COUNT = 3;
+    expect(addChildSpy).toHaveBeenCalledTimes(EXPECTED_CHILD_COUNT);
+    expect(hoisted.mockRegisterPatch).toHaveBeenCalledWith(WorkspaceLeafClass.prototype, expect.anything());
   });
 });
 
@@ -206,205 +145,131 @@ describe('Plugin.openLinkText', () => {
     vi.clearAllMocks();
   });
 
-  it('should pass through when linked file exists', async () => {
-    const plugin = createPlugin();
-    const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
+  it('should pass through when the linked file already exists', async () => {
     const existingFile = { path: 'notes/test.md' };
+    const { internals } = createPlugin({ getFirstLinkpathDest: vi.fn().mockReturnValue(existingFile) });
+    const next = vi.fn();
 
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '' });
-    setMetadataCache(plugin, {
-      getFirstLinkpathDest: vi.fn().mockReturnValue(existingFile)
-    });
-
-    await plugin['openLinkText'](next, leaf, 'test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test', 'source.md');
 
     expect(next).toHaveBeenCalledWith('test', 'source.md', undefined);
   });
 
-  it('should use absolute path when link starts with /', async () => {
-    const plugin = createPlugin();
+  it('should use the absolute path when the link starts with a slash', async () => {
+    const { internals } = createPlugin();
     const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
 
-    hoisted.mockParseLinktext.mockReturnValue({ path: '/notes/test', subpath: '' });
-
-    await plugin['openLinkText'](next, leaf, '/notes/test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), '/notes/test', 'source.md');
 
     expect(next).toHaveBeenCalledWith('/notes/test', 'source.md', undefined);
   });
 
-  it('should use getNewFileParent for relative paths', async () => {
-    const plugin = createPlugin();
+  it('should resolve relative paths against the new file parent', async () => {
+    const { internals } = createPlugin();
     const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
 
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '' });
-    hoisted.mockJoin.mockReturnValue('notes/test');
-
-    await plugin['openLinkText'](next, leaf, 'test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test', 'source.md');
 
     expect(next).toHaveBeenCalledWith('/notes/test', 'source.md', undefined);
   });
 
-  it('should show error for wrong relative path starting with ../', async () => {
-    const plugin = createPlugin();
+  it('should show an error for a wrong relative path starting with ../', async () => {
+    const { internals } = createPlugin({ newFileParentPath: '.' });
     const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(noop);
 
-    hoisted.mockParseLinktext.mockReturnValue({ path: '../other/test', subpath: '' });
-    hoisted.mockJoin.mockReturnValue('../other/test');
-    // eslint-disable-next-line @typescript-eslint/no-empty-function -- intentionally suppress console.error output in test.
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    await plugin['openLinkText'](next, leaf, '../other/test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), '../other/test', 'source.md');
 
     expect(hoisted.mockNotice).toHaveBeenCalledWith('Wrong relative path: ../other/test');
     expect(consoleErrorSpy).toHaveBeenCalledWith('Wrong relative path: ../other/test');
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should prompt for folder when shouldPromptForFolderLocation is true', async () => {
-    const plugin = createPlugin({ shouldPromptForFolderLocation: true });
+  it('should prompt for a folder when shouldPromptForFolderLocation is true', async () => {
+    const { internals } = createPlugin({ shouldPromptForFolderLocation: true });
     const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
+    hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'selected' }));
 
-    // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
-    const selectedFolder = { path: 'selected' } as TFolder;
-
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '' });
-    hoisted.mockJoin.mockReturnValueOnce('notes/test').mockReturnValueOnce('selected/test');
-    hoisted.mockDirname.mockReturnValue('notes');
-    hoisted.mockBasename.mockReturnValue('test');
-    hoisted.mockSelectFolder.mockResolvedValue(selectedFolder);
-
-    await plugin['openLinkText'](next, leaf, 'test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test', 'source.md');
 
     expect(hoisted.mockSelectFolder).toHaveBeenCalled();
     expect(next).toHaveBeenCalledWith('/selected/test', 'source.md', undefined);
   });
 
-  it('should return early when user cancels folder selection', async () => {
-    const plugin = createPlugin({ shouldPromptForFolderLocation: true });
+  it('should return early when the user cancels the folder selection', async () => {
+    const { internals } = createPlugin({ shouldPromptForFolderLocation: true });
     const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
-
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '' });
-    hoisted.mockJoin.mockReturnValue('notes/test');
-    hoisted.mockDirname.mockReturnValue('notes');
     hoisted.mockSelectFolder.mockResolvedValue(null);
 
-    await plugin['openLinkText'](next, leaf, 'test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test', 'source.md');
 
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should use / as default dir when dirname returns .', async () => {
-    const plugin = createPlugin({ shouldPromptForFolderLocation: true });
+  it('should use the root as the default folder when the directory resolves to a dot', async () => {
+    const { internals } = createPlugin({ newFileParentPath: '.', shouldPromptForFolderLocation: true });
     const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
+    hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'root' }));
 
-    // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
-    const selectedFolder = { path: 'root' } as TFolder;
-
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '' });
-    hoisted.mockJoin.mockReturnValueOnce('test').mockReturnValueOnce('root/test');
-    hoisted.mockDirname.mockReturnValue('.');
-    hoisted.mockBasename.mockReturnValue('test');
-    hoisted.mockSelectFolder.mockResolvedValue(selectedFolder);
-
-    await plugin['openLinkText'](next, leaf, 'test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test', 'source.md');
 
     expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), '/');
+    expect(next).toHaveBeenCalledWith('/root/test', 'source.md', undefined);
   });
 
-  it('should edit links when created file differs from original linked file', async () => {
-    const plugin = createPlugin();
-    const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
+  it('should edit links when the created file differs from the original linked file', async () => {
     const createdFile = { path: 'notes/test.md' };
-
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '' });
-    hoisted.mockJoin.mockReturnValue('notes/test');
-
-    setMetadataCache(plugin, {
-      getFirstLinkpathDest: vi.fn()
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(createdFile)
-        .mockReturnValueOnce(null)
-    });
+    const getFirstLinkpathDest = vi.fn()
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(createdFile)
+      .mockReturnValueOnce(null);
+    const { internals } = createPlugin({ getFirstLinkpathDest });
+    const next = vi.fn();
     hoisted.mockEditLinks.mockResolvedValue(undefined);
 
-    await plugin['openLinkText'](next, leaf, 'test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test', 'source.md');
 
     expect(hoisted.mockEditLinks).toHaveBeenCalled();
   });
 
-  it('should not edit links when created file matches original linked file', async () => {
-    const plugin = createPlugin();
-    const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
+  it('should not edit links when the created file matches the original linked file', async () => {
     const createdFile = { path: 'notes/test.md' };
+    const getFirstLinkpathDest = vi.fn()
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(createdFile)
+      .mockReturnValueOnce(createdFile);
+    const { internals } = createPlugin({ getFirstLinkpathDest });
+    const next = vi.fn();
 
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '' });
-    hoisted.mockJoin.mockReturnValue('notes/test');
-
-    setMetadataCache(plugin, {
-      getFirstLinkpathDest: vi.fn()
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(createdFile)
-        .mockReturnValueOnce(createdFile)
-    });
-
-    await plugin['openLinkText'](next, leaf, 'test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test', 'source.md');
 
     expect(hoisted.mockEditLinks).not.toHaveBeenCalled();
   });
 
-  it('should include subpath in the link when calling next', async () => {
-    const plugin = createPlugin();
+  it('should include the subpath in the link passed to next', async () => {
+    const { internals } = createPlugin();
     const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
 
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '#heading' });
-    hoisted.mockJoin.mockReturnValue('notes/test');
-
-    await plugin['openLinkText'](next, leaf, 'test#heading', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test#heading', 'source.md');
 
     expect(next).toHaveBeenCalledWith('/notes/test#heading', 'source.md', undefined);
   });
 
-  it('should handle editLinks callback correctly for matching link', async () => {
-    const plugin = createPlugin();
-    const next = vi.fn();
-    const leaf = strictProxy<WorkspaceLeaf>({});
+  it('should generate a markdown link only for the matching original link', async () => {
     const createdFile = { path: 'notes/test.md' };
-
-    hoisted.mockParseLinktext.mockReturnValue({ path: 'test', subpath: '' });
-    hoisted.mockJoin.mockReturnValue('notes/test');
+    const getFirstLinkpathDest = vi.fn()
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(createdFile)
+      .mockReturnValueOnce(null);
+    const { internals, plugin } = createPlugin({ getFirstLinkpathDest });
+    const next = vi.fn();
     hoisted.mockGenerateMarkdownLink.mockReturnValue('[[notes/test]]');
-
-    setMetadataCache(plugin, {
-      getFirstLinkpathDest: vi.fn()
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(createdFile)
-        .mockReturnValueOnce(null)
+    hoisted.mockEditLinks.mockImplementation((_app: unknown, _sourcePath: string, callback: (link: LinkInfo) => unknown): void => {
+      expect(callback({ link: 'test', original: '[[test]]' })).toBe('[[notes/test]]');
+      expect(callback({ link: 'other', original: '[[other]]' })).toBeUndefined();
     });
 
-    interface LinkInfo {
-      link: string;
-      original: string;
-    }
-
-    hoisted.mockEditLinks.mockImplementation((_app: unknown, _path: string, callback: (link: LinkInfo) => unknown): void => {
-      const result = callback({ link: 'test', original: '[[test]]' });
-      expect(result).toBe('[[notes/test]]');
-
-      const result2 = callback({ link: 'other', original: '[[other]]' });
-      expect(result2).toBeUndefined();
-    });
-
-    await plugin['openLinkText'](next, leaf, 'test', 'source.md');
+    await internals.openLinkText(next, strictProxy<WorkspaceLeaf>({}), 'test', 'source.md');
 
     expect(hoisted.mockEditLinks).toHaveBeenCalled();
     expect(hoisted.mockGenerateMarkdownLink).toHaveBeenCalledWith({

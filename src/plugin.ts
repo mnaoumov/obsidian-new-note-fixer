@@ -1,8 +1,6 @@
-import type {
-  App,
-  OpenViewState,
-  PluginManifest
-} from 'obsidian';
+import type { OpenViewState } from 'obsidian';
+
+import { ValueWrapper } from 'obsidian-dev-utils/value-wrapper';
 
 import {
   Notice,
@@ -31,11 +29,10 @@ import { PluginSettingsTab } from './plugin-settings-tab.ts';
 type OpenLinkTextFn = WorkspaceLeaf['openLinkText'];
 
 export class Plugin extends PluginBase {
-  private readonly monkeyAroundComponent: MonkeyAroundComponent;
-  private readonly pluginSettingsComponent: PluginSettingsComponent;
+  private monkeyAroundComponent!: MonkeyAroundComponent;
+  private pluginSettingsComponent!: PluginSettingsComponent;
 
-  public constructor(app: App, manifest: PluginManifest) {
-    super(app, manifest);
+  protected override onloadImpl(): void {
     this.monkeyAroundComponent = this.addChild(new MonkeyAroundComponent());
     this.pluginSettingsComponent = this.addChild(
       new PluginSettingsComponent({
@@ -52,16 +49,13 @@ export class Plugin extends PluginBase {
         })
       })
     );
-  }
 
-  public override async onload(): Promise<void> {
-    await super.onload();
-    const that = this;
+    const thisWrapper = ValueWrapper.of(this);
     this.monkeyAroundComponent.registerPatch(WorkspaceLeaf.prototype, {
       openLinkText: (next: OpenLinkTextFn): OpenLinkTextFn =>
         /* v8 ignore start -- inner function is called by Obsidian's monkey-patch runtime, not testable in unit tests. */
         function openLinkText(this: WorkspaceLeaf, linktext, sourcePath, openViewState) {
-          return that.openLinkText(next, this, linktext, sourcePath, openViewState);
+          return thisWrapper.value.openLinkText(next, this, linktext, sourcePath, openViewState);
         }
       /* v8 ignore stop */
     });

@@ -65,7 +65,7 @@ describe('PluginSettingsTab', () => {
 
     const tab = new PluginSettingsTab({ plugin: strictProxy<Plugin>({}), pluginSettingsComponent: strictProxy<PluginSettingsComponent>({}) });
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     expect(settingInstances).toHaveLength(1);
   });
@@ -75,7 +75,7 @@ describe('PluginSettingsTab', () => {
 
     const tab = new PluginSettingsTab({ plugin: strictProxy<Plugin>({}), pluginSettingsComponent: strictProxy<PluginSettingsComponent>({}) });
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     expect(settingInstances.at(0)?.setName).toHaveBeenCalledWith('Should prompt for folder location');
   });
@@ -85,7 +85,7 @@ describe('PluginSettingsTab', () => {
 
     const tab = new PluginSettingsTab({ plugin: strictProxy<Plugin>({}), pluginSettingsComponent: strictProxy<PluginSettingsComponent>({}) });
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     expect(settingInstances.at(0)?.setDesc).toHaveBeenCalledWith('Whether to prompt for the folder location when creating a new note');
   });
@@ -96,7 +96,7 @@ describe('PluginSettingsTab', () => {
 
     const tab = new PluginSettingsTab({ plugin: strictProxy<Plugin>({}), pluginSettingsComponent: strictProxy<PluginSettingsComponent>({}) });
     // eslint-disable-next-line @typescript-eslint/no-deprecated -- display() is the entry point for PluginSettingsTabBase; calling it in tests is intentional.
-    tab.display();
+    tab.displayLegacy();
 
     expect(hoisted.keys).toContain('shouldPromptForFolderLocation');
   });

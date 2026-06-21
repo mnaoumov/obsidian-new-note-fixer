@@ -26,8 +26,8 @@ const mockSortSearchResults = vi.fn();
 const mockInvokeAsyncSafely = vi.fn();
 
 interface CreateModalResult {
-  instance: ModalInstance;
-  promise: Promise<null | TFolder>;
+  readonly instance: ModalInstance;
+  readonly promise: Promise<null | TFolder>;
 }
 
 interface MockAppWithVault {

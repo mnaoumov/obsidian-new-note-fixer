@@ -1,6 +1,7 @@
 import type { App } from 'obsidian';
 
 import {
+  Notice,
   parseLinktext,
   WorkspaceLeaf
 } from 'obsidian';

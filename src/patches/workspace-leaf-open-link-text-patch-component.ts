@@ -1,7 +1,7 @@
 import type { App } from 'obsidian';
+import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
 
 import {
-  Notice,
   parseLinktext,
   WorkspaceLeaf
 } from 'obsidian';
@@ -22,16 +22,19 @@ import { selectFolder } from '../folder-selector.ts';
 
 interface WorkspaceLeafOpenLinkTextPatchComponentConstructorParams {
   readonly app: App;
+  readonly pluginNoticeComponent: PluginNoticeComponent;
   readonly pluginSettingsComponent: PluginSettingsComponent;
 }
 
 export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundComponent {
   private readonly app: App;
+  private readonly pluginNoticeComponent: PluginNoticeComponent;
   private readonly pluginSettingsComponent: PluginSettingsComponent;
 
   public constructor(params: WorkspaceLeafOpenLinkTextPatchComponentConstructorParams) {
     super();
     this.app = params.app;
+    this.pluginNoticeComponent = params.pluginNoticeComponent;
     this.pluginSettingsComponent = params.pluginSettingsComponent;
   }
 
@@ -75,7 +78,7 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
           fullPath = join(folder.path, basename(fullPath));
         } else if (fullPath.startsWith('../')) {
           const message = `Wrong relative path: ${path}`;
-          new Notice(message);
+          this.pluginNoticeComponent.showNotice(message);
           console.error(message);
           return;
         }

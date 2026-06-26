@@ -4,6 +4,7 @@ import type {
   TFolder,
   WorkspaceLeaf as WorkspaceLeafType
 } from 'obsidian';
+import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
 
 import { WorkspaceLeaf } from 'obsidian';
 import { noop } from 'obsidian-dev-utils/function';
@@ -20,6 +21,8 @@ import {
 import type { PluginSettingsComponent } from '../plugin-settings-component.ts';
 import type { PluginSettings } from '../plugin-settings.ts';
 
+import { WorkspaceLeafOpenLinkTextPatchComponent } from './workspace-leaf-open-link-text-patch-component.ts';
+
 /**
  * The component is driven through the REAL `MonkeyAroundComponent` from
  * `obsidian-dev-utils` (never mocked): `component.load()` really patches
@@ -31,21 +34,21 @@ import type { PluginSettings } from '../plugin-settings.ts';
  * re-implementation of any dev-utils / test-mocks logic.
  *
  * Only the plugin's OWN sibling module (`folder-selector`) and the dev-utils
- * `link` utilities (`editLinks` / `generateMarkdownLink`) and `Notice` are
- * stubbed for their return values — driving those for real would require a full
- * vault with file contents.
+ * `link` utilities (`editLinks` / `generateMarkdownLink`) are stubbed for their
+ * return values — driving those for real would require a full vault with file
+ * contents. The notice is delivered through the injected
+ * `PluginNoticeComponent.showNotice`, stubbed on the proxy in `createComponent`.
  */
 
 const hoisted = vi.hoisted(() => ({
   mockEditLinks: vi.fn(),
   mockGenerateMarkdownLink: vi.fn(),
-  mockNotice: vi.fn(),
-  mockSelectFolder: vi.fn()
+  mockSelectFolder: vi.fn(),
+  mockShowNotice: vi.fn()
 }));
 
 vi.mock('obsidian', async (importOriginal) => ({
-  ...await importOriginal<typeof import('obsidian')>(),
-  Notice: hoisted.mockNotice
+  ...await importOriginal<typeof import('obsidian')>()
 }));
 
 vi.mock('obsidian-dev-utils/obsidian/link', async (importOriginal) => ({
@@ -57,9 +60,6 @@ vi.mock('obsidian-dev-utils/obsidian/link', async (importOriginal) => ({
 vi.mock('../folder-selector.ts', () => ({
   selectFolder: hoisted.mockSelectFolder
 }));
-
-// eslint-disable-next-line import-x/first, import-x/imports-first -- vi.mock must precede the SUT import.
-import { WorkspaceLeafOpenLinkTextPatchComponent } from './workspace-leaf-open-link-text-patch-component.ts';
 
 interface CreateComponentOptions {
   readonly getFirstLinkpathDest?: App['metadataCache']['getFirstLinkpathDest'];
@@ -131,7 +131,7 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
 
     await openLinkText('../other/test', 'source.md');
 
-    expect(hoisted.mockNotice).toHaveBeenCalledWith('Wrong relative path: ../other/test');
+    expect(hoisted.mockShowNotice).toHaveBeenCalledWith('Wrong relative path: ../other/test');
     expect(consoleErrorSpy).toHaveBeenCalledWith('Wrong relative path: ../other/test');
     expect(next).not.toHaveBeenCalled();
   });
@@ -245,7 +245,11 @@ function createComponent(options: CreateComponentOptions = {}): CreateComponentR
   const next = vi.fn();
   patchedProto.openLinkText = next;
 
-  const component = new WorkspaceLeafOpenLinkTextPatchComponent({ app, pluginSettingsComponent });
+  const component = new WorkspaceLeafOpenLinkTextPatchComponent({
+    app,
+    pluginNoticeComponent: strictProxy<PluginNoticeComponent>({ showNotice: hoisted.mockShowNotice }),
+    pluginSettingsComponent
+  });
   component.load();
   loadedComponents.push(component);
 

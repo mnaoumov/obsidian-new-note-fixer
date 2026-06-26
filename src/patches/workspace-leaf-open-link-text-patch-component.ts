@@ -88,16 +88,20 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
         const createdFile = this.app.metadataCache.getFirstLinkpathDest(fullPath, sourcePath);
         linkedFile = this.app.metadataCache.getFirstLinkpathDest(path, sourcePath);
         if (linkedFile !== createdFile && createdFile) {
-          await editLinks(this.app, sourcePath, (link) => {
-            if (link.link !== linktext) {
-              return;
-            }
-            return generateMarkdownLink({
-              app: this.app,
-              originalLink: link.original,
-              sourcePathOrFile: sourcePath,
-              targetPathOrFile: createdFile
-            });
+          await editLinks({
+            app: this.app,
+            linkConverter: (link) => {
+              if (link.link !== linktext) {
+                return;
+              }
+              return generateMarkdownLink({
+                app: this.app,
+                originalLink: link.original,
+                sourcePathOrFile: sourcePath,
+                targetPathOrFile: createdFile
+              });
+            },
+            pathOrFile: sourcePath
           });
         }
       }

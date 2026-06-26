@@ -42,7 +42,7 @@ describe('PluginSettingsTab', () => {
      * which throws on the non-text toggle. `bind` is exercised by dev-utils' own tests, so stubbing its
      * return value (a passthrough) is an allowed double, not a re-implementation.
      */
-    vi.spyOn(PluginSettingsTabBase.prototype, 'bind').mockImplementation((valueComponent) => valueComponent);
+    vi.spyOn(PluginSettingsTabBase.prototype, 'bind').mockImplementation((params) => params.valueComponent);
   });
 
   afterEach(() => {
@@ -66,7 +66,7 @@ describe('PluginSettingsTab', () => {
     const tab = createTab();
     tab.displayLegacy();
 
-    const boundKeys = vi.mocked(PluginSettingsTabBase.prototype.bind).mock.calls.map((call) => call[1]);
+    const boundKeys = vi.mocked(PluginSettingsTabBase.prototype.bind).mock.calls.map((call) => call[0].propertyName);
     expect(boundKeys).toContain('shouldPromptForFolderLocation');
   });
 });

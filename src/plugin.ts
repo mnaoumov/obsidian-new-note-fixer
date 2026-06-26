@@ -28,6 +28,7 @@ export class Plugin extends PluginBase {
     this.addChild(
       new WorkspaceLeafOpenLinkTextPatchComponent({
         app: this.app,
+        pluginNoticeComponent: this.pluginNoticeComponent,
         pluginSettingsComponent
       })
     );

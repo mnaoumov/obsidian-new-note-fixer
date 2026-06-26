@@ -11,7 +11,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
       .setName('Should prompt for folder location')
       .setDesc('Whether to prompt for the folder location when creating a new note')
       .addToggle((toggle) => {
-        this.bind(toggle, 'shouldPromptForFolderLocation');
+        this.bind({
+          propertyName: 'shouldPromptForFolderLocation',
+          valueComponent: toggle
+        });
       });
   }
 }

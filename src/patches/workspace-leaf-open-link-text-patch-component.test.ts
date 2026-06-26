@@ -73,6 +73,10 @@ interface CreateComponentResult {
   openLinkText(linktext: string, sourcePath: string, openViewState?: OpenViewState): Promise<void>;
 }
 
+interface EditLinksMockParams {
+  linkConverter(link: LinkInfo): unknown;
+}
+
 interface LinkInfo {
   link: string;
   original: string;
@@ -208,9 +212,9 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
       .mockReturnValueOnce(null);
     const { app, openLinkText } = createComponent({ getFirstLinkpathDest });
     hoisted.mockGenerateMarkdownLink.mockReturnValue('[[notes/test]]');
-    hoisted.mockEditLinks.mockImplementation((_app: unknown, _sourcePath: string, callback: (link: LinkInfo) => unknown): void => {
-      expect(callback({ link: 'test', original: '[[test]]' })).toBe('[[notes/test]]');
-      expect(callback({ link: 'other', original: '[[other]]' })).toBeUndefined();
+    hoisted.mockEditLinks.mockImplementation((params: EditLinksMockParams): void => {
+      expect(params.linkConverter({ link: 'test', original: '[[test]]' })).toBe('[[notes/test]]');
+      expect(params.linkConverter({ link: 'other', original: '[[other]]' })).toBeUndefined();
     });
 
     await openLinkText('test', 'source.md');

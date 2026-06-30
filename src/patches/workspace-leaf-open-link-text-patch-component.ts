@@ -1,5 +1,6 @@
 import type { App } from 'obsidian';
 import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
+import type { EditorLockComponent } from 'obsidian-dev-utils/obsidian/editor-lock';
 
 import {
   parseLinktext,
@@ -22,18 +23,21 @@ import { selectFolder } from '../folder-selector.ts';
 
 interface WorkspaceLeafOpenLinkTextPatchComponentConstructorParams {
   readonly app: App;
+  readonly editorLockComponent: EditorLockComponent | null;
   readonly pluginNoticeComponent: PluginNoticeComponent;
   readonly pluginSettingsComponent: PluginSettingsComponent;
 }
 
 export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundComponent {
   private readonly app: App;
+  private readonly editorLockComponent: EditorLockComponent | null;
   private readonly pluginNoticeComponent: PluginNoticeComponent;
   private readonly pluginSettingsComponent: PluginSettingsComponent;
 
   public constructor(params: WorkspaceLeafOpenLinkTextPatchComponentConstructorParams) {
     super();
     this.app = params.app;
+    this.editorLockComponent = params.editorLockComponent;
     this.pluginNoticeComponent = params.pluginNoticeComponent;
     this.pluginSettingsComponent = params.pluginSettingsComponent;
   }
@@ -90,6 +94,7 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
         if (linkedFile !== createdFile && createdFile) {
           await editLinks({
             app: this.app,
+            editorLockComponent: this.editorLockComponent,
             linkConverter: (link) => {
               if (link.link !== linktext) {
                 return;

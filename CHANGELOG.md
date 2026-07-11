@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2.0.10
+
+- chore: update libs
+- chore: update obsidian-dev-utils to 85.0.0
+- refactor: pass params object to FolderSelectorModal constructor
+- build: lock typescript to 6.0.3
+- test: wire integration-testing vitest-setup into integration projects
+- chore: update libs
+- chore: sort tsconfig types
+
 ## 2.0.9
 
 - refactor: new template

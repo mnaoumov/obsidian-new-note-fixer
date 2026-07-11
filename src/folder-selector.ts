@@ -12,11 +12,21 @@ import {
 } from 'obsidian';
 import { invokeAsyncSafely } from 'obsidian-dev-utils/async';
 
-class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
-  private isSelected = false;
+interface FolderSelectorModalConstructorParams {
+  readonly app: App;
+  readonly initialQuery: string;
+  resolve(this: void, folder: null | TFolder): void;
+}
 
-  public constructor(app: App, private readonly resolve: (folder: null | TFolder) => void, private initialQuery: string) {
-    super(app);
+class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
+  private initialQuery: string;
+  private isSelected = false;
+  private readonly resolve: (folder: null | TFolder) => void;
+
+  public constructor(params: FolderSelectorModalConstructorParams) {
+    super(params.app);
+    this.initialQuery = params.initialQuery;
+    this.resolve = params.resolve;
   }
 
   public override getItems(): TFolder[] {
@@ -137,7 +147,7 @@ class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
 
 export async function selectFolder(app: App, initialQuery: string): Promise<null | TFolder> {
   return await new Promise<null | TFolder>((resolve) => {
-    const selector = new FolderSelectorModal(app, resolve, initialQuery);
+    const selector = new FolderSelectorModal({ app, initialQuery, resolve });
     selector.open();
   });
 }

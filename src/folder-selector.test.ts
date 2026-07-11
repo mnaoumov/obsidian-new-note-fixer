@@ -33,13 +33,11 @@ const mockSearchFn = vi.fn();
 const mockSortSearchResults = vi.fn();
 const mockInvokeAsyncSafely = vi.fn();
 
-/* eslint-disable obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting. */
 const mockFolders: TFolder[] = [
-  { path: 'notes' } as TFolder,
-  { path: 'notes/daily' } as TFolder,
-  { path: 'attachments' } as TFolder
+  strictProxy<TFolder>({ path: 'notes' }),
+  strictProxy<TFolder>({ path: 'notes/daily' }),
+  strictProxy<TFolder>({ path: 'attachments' })
 ];
-/* eslint-enable obsidianmd/no-tfile-tfolder-cast -- end of mock data block. */
 
 interface ChooserStub {
   setSuggestions: ReturnType<typeof vi.fn>;
@@ -136,8 +134,7 @@ describe('selectFolder', () => {
     it('should not resolve with null when modal closes after selection', async () => {
       const { instance, promise } = createModal('/');
 
-      // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
-      const folder = { path: 'notes' } as TFolder;
+      const folder = strictProxy<TFolder>({ path: 'notes' });
       instance.onChooseItem(folder);
       instance.selectSuggestion({ item: folder, match: { matches: [], score: 0 } }, castTo<MouseEvent>({}));
       instance.onClose();
@@ -149,8 +146,7 @@ describe('selectFolder', () => {
     it('should resolve with chosen folder when item is selected', async () => {
       const { instance, promise } = createModal('/');
 
-      // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
-      const folder = { path: 'notes' } as TFolder;
+      const folder = strictProxy<TFolder>({ path: 'notes' });
       instance.onChooseItem(folder);
 
       const result = await promise;
@@ -167,8 +163,7 @@ describe('selectFolder', () => {
     });
 
     it('should resolve with created folder when vault.createFolder succeeds', async () => {
-      // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
-      const createdFolder = { path: 'new-folder' } as TFolder;
+      const createdFolder = strictProxy<TFolder>({ path: 'new-folder' });
       mockInvokeAsyncSafely.mockImplementation((fn: () => Promise<void>): void => {
         fn().catch(() => {
           /* Intentionally swallowed for test */
@@ -223,8 +218,7 @@ describe('selectFolder', () => {
     it('should return folder path for non-null item', () => {
       const { instance } = createModal('/');
 
-      // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
-      const text = instance.getItemText({ path: 'my-folder' } as TFolder);
+      const text = instance.getItemText(strictProxy<TFolder>({ path: 'my-folder' }));
 
       expect(text).toBe('my-folder');
       vi.runOnlyPendingTimers();
@@ -323,8 +317,7 @@ describe('selectFolder', () => {
     it('should set isSelected to true', () => {
       const { instance, promise } = createModal('/');
 
-      // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
-      const mockMatch = { item: { path: 'notes' } as TFolder, match: { matches: [], score: 0 } };
+      const mockMatch = { item: strictProxy<TFolder>({ path: 'notes' }), match: { matches: [], score: 0 } };
       instance.selectSuggestion(mockMatch, castTo<MouseEvent>({}));
 
       /*
@@ -372,8 +365,7 @@ describe('selectFolder', () => {
       const el = createDiv();
       const addClassSpy = vi.spyOn(el, 'addClass');
 
-      // eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- test mock data requires casting.
-      const match = { item: { path: 'notes' } as TFolder, match: { matches: [], score: 0 } };
+      const match = { item: strictProxy<TFolder>({ path: 'notes' }), match: { matches: [], score: 0 } };
       instance.renderSuggestion(match, el);
 
       expect(addClassSpy).not.toHaveBeenCalled();

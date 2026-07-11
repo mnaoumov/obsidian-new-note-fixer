@@ -28,9 +28,9 @@ export class Plugin extends PluginBase {
     this.addChild(
       new WorkspaceLeafOpenLinkTextPatchComponent({
         app: this.app,
-        editorLockComponent: this.editorLockComponent,
         pluginNoticeComponent: this.pluginNoticeComponent,
-        pluginSettingsComponent
+        pluginSettingsComponent,
+        resourceLockComponent: this.resourceLockComponent
       })
     );
   }

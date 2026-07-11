@@ -5,7 +5,7 @@ import type {
   WorkspaceLeaf as WorkspaceLeafType
 } from 'obsidian';
 import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
-import type { EditorLockComponent } from 'obsidian-dev-utils/obsidian/editor-lock';
+import type { ResourceLockComponent } from 'obsidian-dev-utils/obsidian/resource-lock';
 
 import { WorkspaceLeaf } from 'obsidian';
 import { noop } from 'obsidian-dev-utils/function';
@@ -252,9 +252,9 @@ function createComponent(options: CreateComponentOptions = {}): CreateComponentR
 
   const component = new WorkspaceLeafOpenLinkTextPatchComponent({
     app,
-    editorLockComponent: strictProxy<EditorLockComponent>({}),
     pluginNoticeComponent: strictProxy<PluginNoticeComponent>({ showNotice: hoisted.mockShowNotice }),
-    pluginSettingsComponent
+    pluginSettingsComponent,
+    resourceLockComponent: strictProxy<ResourceLockComponent>({})
   });
   component.load();
   loadedComponents.push(component);

@@ -37,7 +37,3 @@ New Note Fixer is an Obsidian plugin that unifies the way non-existing notes are
   - `folder-selector.ts` — `FolderSelectorModal` (`FuzzySuggestModal` subclass) plus `selectFolder`, a fuzzy multi-part folder picker that can also create a new folder from the typed query
   - `patches/workspace-leaf-open-link-text-patch-component.ts` — `WorkspaceLeafOpenLinkTextPatchComponent` extending dev-utils' `MonkeyAroundComponent`; patches `WorkspaceLeaf.prototype.openLinkText` to resolve/create the target note path (optionally prompting for a folder) and rewrite the source link to the created file
 - **`main` field** points to `src/main.ts` (Obsidian plugin source entry; built artifact is `dist/build/main.js`, not published to npm).
-
-## Known Issues
-
-None.

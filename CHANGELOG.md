@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2.0.11
+
+- docs: standardize demo-vault README
+- docs: drop per-plugin demo-vault setup notes (bootstrap covered by ODU harness)
+- Merge branch 'T110': create the New Note Fixer demo vault (S2)
+- chore: update libs
+- chore: update libs
+- docs: migrate to AGENTS.md
+
 ## 2.0.10
 
 - chore: update libs

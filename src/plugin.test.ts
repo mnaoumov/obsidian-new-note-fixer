@@ -52,7 +52,7 @@ describe('Plugin', () => {
 
   it('should wire the settings, settings-tab and openLinkText-patch children in onloadImpl', async () => {
     const app = castTo<AppStatics>(App).createConfigured__().asOriginalType__();
-    const plugin = new Plugin(app, strictProxy<PluginManifest>({ id: 'test', name: 'test' }));
+    const plugin = new Plugin(app, strictProxy<PluginManifest>({ id: 'test', name: 'test', version: '1.0.0' }));
     const addChildSpy = vi.spyOn(plugin, 'addChild');
 
     await plugin.onload();
@@ -61,6 +61,20 @@ describe('Plugin', () => {
     expect(addedChildren.some((child) => child instanceof PluginSettingsComponent)).toBe(true);
     expect(addedChildren.some((child) => child instanceof PluginSettingsTabComponent)).toBe(true);
     expect(addedChildren.some((child) => child instanceof WorkspaceLeafOpenLinkTextPatchComponent)).toBe(true);
+
+    plugin.unload();
+  });
+
+  it('should register the open demo vault command via its command handler', async () => {
+    const app = castTo<AppStatics>(App).createConfigured__().asOriginalType__();
+    const plugin = new Plugin(app, strictProxy<PluginManifest>({ id: 'test', name: 'test', version: '1.0.0' }));
+    const addCommandSpy = vi.spyOn(plugin, 'addCommand');
+
+    await plugin.onload();
+
+    expect(addCommandSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'open-demo-vault' })
+    );
 
     plugin.unload();
   });

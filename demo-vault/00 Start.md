@@ -6,4 +6,5 @@ Welcome to the [New Note Fixer](https://github.com/mnaoumov/obsidian-new-note-fi
 
 - [[01 Subfolder link fix]]
 - [[02 Relative link fix]]
-- [[03 Settings]]
+- [[03 Current note folder]]
+- [[04 Settings]]

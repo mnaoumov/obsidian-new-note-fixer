@@ -22,6 +22,7 @@ import {
 import type { PluginSettingsComponent } from '../plugin-settings-component.ts';
 import type { PluginSettings } from '../plugin-settings.ts';
 
+import { NewNoteLocationMode } from '../plugin-settings.ts';
 import { WorkspaceLeafOpenLinkTextPatchComponent } from './workspace-leaf-open-link-text-patch-component.ts';
 
 /**
@@ -34,14 +35,18 @@ import { WorkspaceLeafOpenLinkTextPatchComponent } from './workspace-leaf-open-l
  * patch wraps) — a sanctioned return-value/behavior supplement, not a
  * re-implementation of any dev-utils / test-mocks logic.
  *
- * Only the plugin's OWN sibling module (`folder-selector`) and the dev-utils
- * `link` utilities (`editLinks` / `generateMarkdownLink`) are stubbed for their
- * return values — driving those for real would require a full vault with file
- * contents. The notice is delivered through the injected
- * `PluginNoticeComponent.showNotice`, stubbed on the proxy in `createComponent`.
+ * Only the plugin's OWN sibling module (`folder-selector`), the dev-utils
+ * `link` utilities (`editLinks` / `generateMarkdownLink`), and the dev-utils
+ * `confirm` modal are stubbed for their return values — driving those for real
+ * would require a full vault with file contents or live user interaction with a
+ * modal. `confirm` is an interactive UI helper, so it is supplemented for its
+ * boolean return, not re-implemented. The notice is delivered through the
+ * injected `PluginNoticeComponent.showNotice`, stubbed on the proxy in
+ * `createComponent`.
  */
 
 const hoisted = vi.hoisted(() => ({
+  mockConfirm: vi.fn(),
   mockEditLinks: vi.fn(),
   mockGenerateMarkdownLink: vi.fn(),
   mockSelectFolder: vi.fn(),
@@ -58,6 +63,10 @@ vi.mock('obsidian-dev-utils/obsidian/link', async (importOriginal) => ({
   generateMarkdownLink: hoisted.mockGenerateMarkdownLink
 }));
 
+vi.mock('obsidian-dev-utils/obsidian/modals/confirm', () => ({
+  confirm: hoisted.mockConfirm
+}));
+
 vi.mock('../folder-selector.ts', () => ({
   selectFolder: hoisted.mockSelectFolder
 }));
@@ -65,7 +74,7 @@ vi.mock('../folder-selector.ts', () => ({
 interface CreateComponentOptions {
   readonly getFirstLinkpathDest?: App['metadataCache']['getFirstLinkpathDest'];
   readonly newFileParentPath?: string;
-  readonly shouldPromptForFolderLocation?: boolean;
+  readonly newNoteLocationMode?: NewNoteLocationMode;
 }
 
 interface CreateComponentResult {
@@ -141,18 +150,19 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should prompt for a folder when shouldPromptForFolderLocation is true', async () => {
-    const { next, openLinkText } = createComponent({ shouldPromptForFolderLocation: true });
+  it('should prompt for a folder when the mode is PromptForFolder', async () => {
+    const { next, openLinkText } = createComponent({ newNoteLocationMode: NewNoteLocationMode.PromptForFolder });
     hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'selected' }));
 
     await openLinkText('test', 'source.md');
 
+    expect(hoisted.mockConfirm).not.toHaveBeenCalled();
     expect(hoisted.mockSelectFolder).toHaveBeenCalled();
     expect(next).toHaveBeenCalledWith('/selected/test', 'source.md', undefined);
   });
 
   it('should return early when the user cancels the folder selection', async () => {
-    const { next, openLinkText } = createComponent({ shouldPromptForFolderLocation: true });
+    const { next, openLinkText } = createComponent({ newNoteLocationMode: NewNoteLocationMode.PromptForFolder });
     hoisted.mockSelectFolder.mockResolvedValue(null);
 
     await openLinkText('test', 'source.md');
@@ -161,13 +171,59 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
   });
 
   it('should use the root as the default folder when the directory resolves to a dot', async () => {
-    const { next, openLinkText } = createComponent({ newFileParentPath: '.', shouldPromptForFolderLocation: true });
+    const { next, openLinkText } = createComponent({ newFileParentPath: '.', newNoteLocationMode: NewNoteLocationMode.PromptForFolder });
     hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'root' }));
 
     await openLinkText('test', 'source.md');
 
     expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), '/');
     expect(next).toHaveBeenCalledWith('/root/test', 'source.md', undefined);
+  });
+
+  it('should seed the picker with the current note folder when the mode is AskForCurrentNoteFolderFirst and the user confirms', async () => {
+    const { next, openLinkText } = createComponent({ newNoteLocationMode: NewNoteLocationMode.AskForCurrentNoteFolderFirst });
+    hoisted.mockConfirm.mockResolvedValue(true);
+    hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'selected' }));
+
+    await openLinkText('test', 'projects/source.md');
+
+    expect(hoisted.mockConfirm).toHaveBeenCalled();
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'projects');
+    expect(next).toHaveBeenCalledWith('/selected/test', 'projects/source.md', undefined);
+  });
+
+  it('should seed the picker with the root when the confirmed current note is at the vault root', async () => {
+    const { next, openLinkText } = createComponent({ newNoteLocationMode: NewNoteLocationMode.AskForCurrentNoteFolderFirst });
+    hoisted.mockConfirm.mockResolvedValue(true);
+    hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'selected' }));
+
+    await openLinkText('test', 'source.md');
+
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), '/');
+    expect(next).toHaveBeenCalledWith('/selected/test', 'source.md', undefined);
+  });
+
+  it('should seed the picker with the default folder when the mode is AskForCurrentNoteFolderFirst and the user declines', async () => {
+    const { next, openLinkText } = createComponent({ newNoteLocationMode: NewNoteLocationMode.AskForCurrentNoteFolderFirst });
+    hoisted.mockConfirm.mockResolvedValue(false);
+    hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'selected' }));
+
+    await openLinkText('test', 'projects/source.md');
+
+    expect(hoisted.mockConfirm).toHaveBeenCalled();
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'notes');
+    expect(next).toHaveBeenCalledWith('/selected/test', 'projects/source.md', undefined);
+  });
+
+  it('should not confirm in AskForCurrentNoteFolderFirst mode when there is no source note', async () => {
+    const { next, openLinkText } = createComponent({ newNoteLocationMode: NewNoteLocationMode.AskForCurrentNoteFolderFirst });
+    hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'selected' }));
+
+    await openLinkText('test', '');
+
+    expect(hoisted.mockConfirm).not.toHaveBeenCalled();
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'notes');
+    expect(next).toHaveBeenCalledWith('/selected/test', '', undefined);
   });
 
   it('should edit links when the created file differs from the original linked file', async () => {
@@ -240,7 +296,7 @@ function createComponent(options: CreateComponentOptions = {}): CreateComponentR
     })
   });
   const pluginSettingsComponent = strictProxy<PluginSettingsComponent>({
-    settings: strictProxy<PluginSettings>({ shouldPromptForFolderLocation: options.shouldPromptForFolderLocation ?? false })
+    settings: strictProxy<PluginSettings>({ newNoteLocationMode: options.newNoteLocationMode ?? NewNoteLocationMode.DefaultLocation })
   });
 
   /*

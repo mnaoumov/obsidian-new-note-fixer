@@ -12,8 +12,8 @@ registerDemoVaultCoverageSuite({
   configInterfaces: [{ interfaceName: 'PluginSettings', sourcePath: 'src/plugin-settings.ts' }],
   interfaces: [],
   nonTrivialGuard: {
-    expectDemoNote: '03 Settings.md',
-    expectMember: 'shouldPromptForFolderLocation',
+    expectDemoNote: '04 Settings.md',
+    expectMember: 'newNoteLocationMode',
     interfaceName: 'PluginSettings',
     sourcePath: 'src/plugin-settings.ts'
   },

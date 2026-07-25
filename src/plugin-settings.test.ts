@@ -4,12 +4,15 @@ import {
   it
 } from 'vitest';
 
-import { PluginSettings } from './plugin-settings.ts';
+import {
+  NewNoteLocationMode,
+  PluginSettings
+} from './plugin-settings.ts';
 
 describe('PluginSettings', () => {
-  it('should have shouldPromptForFolderLocation default to false', () => {
+  it('should have newNoteLocationMode default to DefaultLocation', () => {
     const settings = new PluginSettings();
 
-    expect(settings.shouldPromptForFolderLocation).toBe(false);
+    expect(settings.newNoteLocationMode).toBe(NewNoteLocationMode.DefaultLocation);
   });
 });

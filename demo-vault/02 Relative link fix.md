@@ -12,6 +12,6 @@ A link like `[[../folder/note]]` points *above* the folder of the current note. 
 
 ## Prefer to pick a folder?
 
-If you enable **Should prompt for folder location** (see [[03 Settings]]), a relative link no longer errors out - instead you get a folder picker so you can send the new note wherever you like, keeping it inside the vault. Without the prompt, the safe default is to refuse the out-of-vault path.
+If you set **New note location** to **Prompt for folder** or **Ask for current note folder first** (see [[04 Settings]]), a relative link no longer errors out - instead you get a folder picker so you can send the new note wherever you like, keeping it inside the vault. With the default **Default location** mode, the safe default is to refuse the out-of-vault path.
 
 For the everyday folder-qualified case, see [[01 Subfolder link fix]].

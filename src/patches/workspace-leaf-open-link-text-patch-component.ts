@@ -11,6 +11,7 @@ import {
   editLinks,
   generateMarkdownLink
 } from 'obsidian-dev-utils/obsidian/link';
+import { confirm } from 'obsidian-dev-utils/obsidian/modals/confirm';
 import {
   basename,
   dirname,
@@ -20,6 +21,7 @@ import {
 import type { PluginSettingsComponent } from '../plugin-settings-component.ts';
 
 import { selectFolder } from '../folder-selector.ts';
+import { NewNoteLocationMode } from '../plugin-settings.ts';
 
 interface WorkspaceLeafOpenLinkTextPatchComponentConstructorParams {
   readonly app: App;
@@ -70,21 +72,41 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
           fullPath = fullPath.slice(1);
         }
 
-        if (this.pluginSettingsComponent.settings.shouldPromptForFolderLocation) {
+        const mode = this.pluginSettingsComponent.settings.newNoteLocationMode;
+
+        if (mode === NewNoteLocationMode.DefaultLocation) {
+          if (fullPath.startsWith('../')) {
+            const message = `Wrong relative path: ${path}`;
+            this.pluginNoticeComponent.showNotice(message);
+            console.error(message);
+            return;
+          }
+        } else {
           let dir = dirname(fullPath);
           if (dir === '.') {
             dir = '/';
           }
+
+          if (mode === NewNoteLocationMode.AskForCurrentNoteFolderFirst && sourcePath) {
+            let currentNoteFolder = dirname(sourcePath);
+            if (currentNoteFolder === '.') {
+              currentNoteFolder = '/';
+            }
+            const shouldUseCurrentNoteFolder = await confirm({
+              app: this.app,
+              message: `Create the new note in the current note’s folder (${currentNoteFolder})?`,
+              title: 'New Note Fixer'
+            });
+            if (shouldUseCurrentNoteFolder) {
+              dir = currentNoteFolder;
+            }
+          }
+
           const folder = await selectFolder(this.app, dir);
           if (!folder) {
             return;
           }
           fullPath = join(folder.path, basename(fullPath));
-        } else if (fullPath.startsWith('../')) {
-          const message = `Wrong relative path: ${path}`;
-          this.pluginNoticeComponent.showNotice(message);
-          console.error(message);
-          return;
         }
 
         await originalMethodBound(`/${fullPath}${subpath}`, sourcePath, openViewState);
@@ -106,6 +128,7 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
               });
             },
             pathOrFile: sourcePath,
+            pluginNoticeComponent: this.pluginNoticeComponent,
             resourceLockComponent: this.resourceLockComponent
           });
         }

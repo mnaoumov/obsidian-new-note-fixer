@@ -31,9 +31,9 @@ New Note Fixer is an Obsidian plugin that unifies the way non-existing notes are
 - **`src/`** — plugin source:
   - `main.ts` — Obsidian entry point (default export of `Plugin`)
   - `plugin.ts` — `Plugin` class extending dev-utils' `PluginBase`; in `onloadImpl` wires up the settings component, the settings tab, and the `openLinkText` patch as child components
-  - `plugin-settings.ts` — `PluginSettings` data class (single setting: `shouldPromptForFolderLocation`)
-  - `plugin-settings-component.ts` — `PluginSettingsComponent` extending dev-utils' `PluginSettingsComponentBase`, bound to `PluginSettings`
-  - `plugin-settings-tab.ts` — `PluginSettingsTab` extending dev-utils' `PluginSettingsTabBase`; renders the "Should prompt for folder location" toggle
+  - `plugin-settings.ts` — `PluginSettings` data class (single setting: `newNoteLocationMode`, a `NewNoteLocationMode` enum: `Default location` / `Prompt for folder` / `Ask for current note folder first`)
+  - `plugin-settings-component.ts` — `PluginSettingsComponent` extending dev-utils' `PluginSettingsComponentBase`, bound to `PluginSettings`; migrates the legacy `shouldPromptForFolderLocation` boolean to `newNoteLocationMode`
+  - `plugin-settings-tab.ts` — `PluginSettingsTab` extending dev-utils' `PluginSettingsTabBase`; renders the "New note location" dropdown
   - `folder-selector.ts` — `FolderSelectorModal` (`FuzzySuggestModal` subclass) plus `selectFolder`, a fuzzy multi-part folder picker that can also create a new folder from the typed query
   - `patches/workspace-leaf-open-link-text-patch-component.ts` — `WorkspaceLeafOpenLinkTextPatchComponent` extending dev-utils' `MonkeyAroundComponent`; patches `WorkspaceLeaf.prototype.openLinkText` to resolve/create the target note path (optionally prompting for a folder) and rewrite the source link to the created file
 - **`main` field** points to `src/main.ts` (Obsidian plugin source entry; built artifact is `dist/build/main.js`, not published to npm).

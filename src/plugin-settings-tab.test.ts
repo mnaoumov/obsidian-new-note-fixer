@@ -4,6 +4,7 @@ import type { PluginEventSource } from 'obsidian-dev-utils/obsidian/plugin/plugi
 
 import {
   App,
+  DropdownComponent,
   Setting
 } from 'obsidian';
 import { castTo } from 'obsidian-dev-utils/object-utils';
@@ -20,6 +21,7 @@ import {
 
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
+import { NewNoteLocationMode } from './plugin-settings.ts';
 
 interface AppStatics {
   createConfigured__(): App;
@@ -49,24 +51,28 @@ describe('PluginSettingsTab', () => {
     vi.restoreAllMocks();
   });
 
-  it('should render a single toggle setting with the expected name and description', () => {
+  it('should render a single dropdown setting with the expected name and options', () => {
     const setNameSpy = vi.spyOn(Setting.prototype, 'setName');
-    const setDescSpy = vi.spyOn(Setting.prototype, 'setDesc');
-    const addToggleSpy = vi.spyOn(Setting.prototype, 'addToggle');
+    const addDropdownSpy = vi.spyOn(Setting.prototype, 'addDropdown');
+    const addOptionsSpy = vi.spyOn(DropdownComponent.prototype, 'addOptions');
 
     const tab = createTab();
     tab.displayLegacy();
 
-    expect(setNameSpy).toHaveBeenCalledWith('Should prompt for folder location');
-    expect(setDescSpy).toHaveBeenCalledWith('Whether to prompt for the folder location when creating a new note');
-    expect(addToggleSpy).toHaveBeenCalledOnce();
+    expect(setNameSpy).toHaveBeenCalledWith('New note location');
+    expect(addDropdownSpy).toHaveBeenCalledOnce();
+    expect(addOptionsSpy).toHaveBeenCalledWith({
+      [NewNoteLocationMode.AskForCurrentNoteFolderFirst]: 'Ask for current note folder first',
+      [NewNoteLocationMode.DefaultLocation]: 'Default location',
+      [NewNoteLocationMode.PromptForFolder]: 'Prompt for folder'
+    });
   });
 
-  it('should bind the toggle to shouldPromptForFolderLocation', () => {
+  it('should bind the dropdown to newNoteLocationMode', () => {
     const tab = createTab();
     tab.displayLegacy();
 
     const boundKeys = vi.mocked(PluginSettingsTabBase.prototype.bind).mock.calls.map((call) => call[0].propertyName);
-    expect(boundKeys).toContain('shouldPromptForFolderLocation');
+    expect(boundKeys).toContain('newNoteLocationMode');
   });
 });

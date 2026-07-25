@@ -15,6 +15,6 @@ When you click a link to a non-existing note, Obsidian creates the note for you.
 
 - **Folder-qualified links** - `[[folder/note]]` is routed through **Default location for new notes** (via `getNewFileParent`), the same rule a bare `[[note]]` already follows.
 - **The clicked link is repaired** - after the note is created in its unified location, the source link is updated to resolve to it, so you never end up with a dangling link.
-- **Prompt instead of auto-place** - if you would rather choose the destination folder yourself each time, turn on the prompt option in [[03 Settings]].
+- **Prompt instead of auto-place** - if you would rather choose the destination folder yourself each time, set **New note location** to **Prompt for folder** in [[04 Settings]]. To be asked whether to use the current note's folder, see [[03 Current note folder]].
 
 Relative links that try to climb above the source folder (`[[../folder/note]]`) are handled separately - see [[02 Relative link fix]].

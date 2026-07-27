@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2.1.0
+
+- feat: add "ask for current note folder first" location mode (re #5)
+- chore: update libs
+
 ## 2.0.13
 
 - chore: update libs

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.2.0
+
+- refactor(settings): move the settings tab onto the declarative settings API
+- chore: update libs and clear the npm audit
+- docs: fix the demo vault download instructions
+
 ## 2.1.0
 
 - feat: add "ask for current note folder first" location mode (re #5)

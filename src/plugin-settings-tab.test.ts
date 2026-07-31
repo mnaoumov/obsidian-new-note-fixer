@@ -1,4 +1,7 @@
-import type { Plugin } from 'obsidian';
+import type {
+  Plugin,
+  SettingGroup
+} from 'obsidian';
 import type { DataHandler } from 'obsidian-dev-utils/obsidian/data-handler';
 import type { PluginEventSource } from 'obsidian-dev-utils/obsidian/plugin/plugin-event-source';
 
@@ -9,6 +12,7 @@ import {
 } from 'obsidian';
 import { castTo } from 'obsidian-dev-utils/object-utils';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/plugin/plugin-settings-tab';
+import { SettingEx } from 'obsidian-dev-utils/obsidian/setting-ex';
 import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
   afterEach,
@@ -37,6 +41,28 @@ function createTab(): PluginSettingsTab {
   return new PluginSettingsTab({ plugin, pluginSettingsComponent });
 }
 
+/**
+ * Invokes every row's `render` callback the way Obsidian does when the tab is opened, so the bindings are
+ * still exercised now that the rows are declarative.
+ *
+ * @param tab - The settings tab.
+ * @returns The names of the declared rows.
+ */
+function renderSettings(tab: PluginSettingsTab): string[] {
+  const names: string[] = [];
+  for (const definition of tab.getSettingDefinitions()) {
+    if ('name' in definition) {
+      names.push(definition.name);
+    }
+
+    if ('render' in definition) {
+      definition.render(new SettingEx(tab.containerEl), castTo<SettingGroup>(null));
+    }
+  }
+
+  return names;
+}
+
 describe('PluginSettingsTab', () => {
   beforeEach(() => {
     /*
@@ -52,14 +78,13 @@ describe('PluginSettingsTab', () => {
   });
 
   it('should render a single dropdown setting with the expected name and options', () => {
-    const setNameSpy = vi.spyOn(Setting.prototype, 'setName');
     const addDropdownSpy = vi.spyOn(Setting.prototype, 'addDropdown');
     const addOptionsSpy = vi.spyOn(DropdownComponent.prototype, 'addOptions');
 
     const tab = createTab();
-    tab.displayLegacy();
+    const names = renderSettings(tab);
 
-    expect(setNameSpy).toHaveBeenCalledWith('New note location');
+    expect(names).toStrictEqual(['New note location']);
     expect(addDropdownSpy).toHaveBeenCalledOnce();
     expect(addOptionsSpy).toHaveBeenCalledWith({
       [NewNoteLocationMode.AskForCurrentNoteFolderFirst]: 'Ask for current note folder first',
@@ -70,7 +95,7 @@ describe('PluginSettingsTab', () => {
 
   it('should bind the dropdown to newNoteLocationMode', () => {
     const tab = createTab();
-    tab.displayLegacy();
+    renderSettings(tab);
 
     const boundKeys = vi.mocked(PluginSettingsTabBase.prototype.bind).mock.calls.map((call) => call[0].propertyName);
     expect(boundKeys).toContain('newNoteLocationMode');

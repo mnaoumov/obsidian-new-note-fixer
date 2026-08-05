@@ -46,11 +46,11 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
 
   public override onload(): void {
     this.registerMethodPatch({
+      $object: WorkspaceLeaf.prototype,
       methodName: 'openLinkText',
-      obj: WorkspaceLeaf.prototype,
       patchHandler: async ({
         fallback,
-        originalArgs: [linktext, sourcePath, openViewState],
+        originalArguments: [linktext, sourcePath, openViewState],
         originalMethodBound
       }) => {
         const { path, subpath } = parseLinktext(linktext);
@@ -82,9 +82,9 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
             return;
           }
         } else {
-          let dir = dirname(fullPath);
-          if (dir === '.') {
-            dir = '/';
+          let directory = dirname(fullPath);
+          if (directory === '.') {
+            directory = '/';
           }
 
           if (mode === NewNoteLocationMode.AskForCurrentNoteFolderFirst && sourcePath) {
@@ -98,11 +98,11 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
               title: 'New Note Fixer'
             });
             if (shouldUseCurrentNoteFolder) {
-              dir = currentNoteFolder;
+              directory = currentNoteFolder;
             }
           }
 
-          const folder = await selectFolder(this.app, dir);
+          const folder = await selectFolder(this.app, directory);
           if (!folder) {
             return;
           }

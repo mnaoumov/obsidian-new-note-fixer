@@ -72,6 +72,7 @@ vi.mock('../folder-selector.ts', () => ({
 }));
 
 interface CreateComponentOptions {
+  // eslint-disable-next-line unicorn/name-replacements -- `getFirstLinkpathDest` is an Obsidian `MetadataCache` method name.
   readonly getFirstLinkpathDest?: App['metadataCache']['getFirstLinkpathDest'];
   readonly newFileParentPath?: string;
   readonly newNoteLocationMode?: NewNoteLocationMode;
@@ -92,16 +93,16 @@ interface LinkInfo {
   original: string;
 }
 
-type OpenLinkTextFn = WorkspaceLeafType['openLinkText'];
+type OpenLinkTextFunction = WorkspaceLeafType['openLinkText'];
 
-interface PatchedProto {
-  openLinkText: OpenLinkTextFn;
+interface PatchedPrototype {
+  openLinkText: OpenLinkTextFunction;
 }
 
 const DEFAULT_NEW_FILE_PARENT_PATH = 'notes';
 
 const loadedComponents: WorkspaceLeafOpenLinkTextPatchComponent[] = [];
-const patchedProto = castTo<PatchedProto>(WorkspaceLeaf.prototype);
+const patchedPrototype = castTo<PatchedPrototype>(WorkspaceLeaf.prototype);
 
 describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
   afterEach(() => {
@@ -109,13 +110,14 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
       loadedComponents.pop()?.unload();
     }
     // Remove the supplemented Obsidian-internal method to avoid cross-file prototype leakage.
-    delete castTo<Partial<PatchedProto>>(WorkspaceLeaf.prototype).openLinkText;
+    delete castTo<Partial<PatchedPrototype>>(WorkspaceLeaf.prototype).openLinkText;
     vi.restoreAllMocks();
     vi.clearAllMocks();
   });
 
   it('should pass through when the linked file already exists', async () => {
     const existingFile = { path: 'notes/test.md' };
+    // eslint-disable-next-line unicorn/name-replacements -- `getFirstLinkpathDest` is an Obsidian `MetadataCache` method name.
     const { next, openLinkText } = createComponent({ getFirstLinkpathDest: vi.fn().mockReturnValue(existingFile) });
 
     await openLinkText('test', 'source.md');
@@ -228,11 +230,12 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
 
   it('should edit links when the created file differs from the original linked file', async () => {
     const createdFile = { path: 'notes/test.md' };
-    const getFirstLinkpathDest = vi.fn()
+    const getFirstLinkpathDestination = vi.fn()
       .mockReturnValueOnce(null)
       .mockReturnValueOnce(createdFile)
       .mockReturnValueOnce(null);
-    const { openLinkText } = createComponent({ getFirstLinkpathDest });
+    // eslint-disable-next-line unicorn/name-replacements -- `getFirstLinkpathDest` is an Obsidian `MetadataCache` method name.
+    const { openLinkText } = createComponent({ getFirstLinkpathDest: getFirstLinkpathDestination });
     hoisted.mockEditLinks.mockResolvedValue(undefined);
 
     await openLinkText('test', 'source.md');
@@ -242,11 +245,12 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
 
   it('should not edit links when the created file matches the original linked file', async () => {
     const createdFile = { path: 'notes/test.md' };
-    const getFirstLinkpathDest = vi.fn()
+    const getFirstLinkpathDestination = vi.fn()
       .mockReturnValueOnce(null)
       .mockReturnValueOnce(createdFile)
       .mockReturnValueOnce(createdFile);
-    const { openLinkText } = createComponent({ getFirstLinkpathDest });
+    // eslint-disable-next-line unicorn/name-replacements -- `getFirstLinkpathDest` is an Obsidian `MetadataCache` method name.
+    const { openLinkText } = createComponent({ getFirstLinkpathDest: getFirstLinkpathDestination });
 
     await openLinkText('test', 'source.md');
 
@@ -263,11 +267,12 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
 
   it('should generate a markdown link only for the matching original link', async () => {
     const createdFile = { path: 'notes/test.md' };
-    const getFirstLinkpathDest = vi.fn()
+    const getFirstLinkpathDestination = vi.fn()
       .mockReturnValueOnce(null)
       .mockReturnValueOnce(createdFile)
       .mockReturnValueOnce(null);
-    const { app, openLinkText } = createComponent({ getFirstLinkpathDest });
+    // eslint-disable-next-line unicorn/name-replacements -- `getFirstLinkpathDest` is an Obsidian `MetadataCache` method name.
+    const { app, openLinkText } = createComponent({ getFirstLinkpathDest: getFirstLinkpathDestination });
     hoisted.mockGenerateMarkdownLink.mockReturnValue('[[notes/test]]');
     hoisted.mockEditLinks.mockImplementation((params: EditLinksMockParams): void => {
       expect(params.linkConverter({ link: 'test', original: '[[test]]' })).toBe('[[notes/test]]');
@@ -292,6 +297,7 @@ function createComponent(options: CreateComponentOptions = {}): CreateComponentR
       getNewFileParent: vi.fn().mockReturnValue({ path: options.newFileParentPath ?? DEFAULT_NEW_FILE_PARENT_PATH })
     }),
     metadataCache: strictProxy<App['metadataCache']>({
+      // eslint-disable-next-line unicorn/name-replacements -- `getFirstLinkpathDest` is an Obsidian `MetadataCache` method name.
       getFirstLinkpathDest: options.getFirstLinkpathDest ?? vi.fn().mockReturnValue(null)
     })
   });
@@ -304,7 +310,7 @@ function createComponent(options: CreateComponentOptions = {}): CreateComponentR
    * `registerMethodPatch` captures it as the original method (the `next` handler).
    */
   const next = vi.fn();
-  patchedProto.openLinkText = next;
+  patchedPrototype.openLinkText = next;
 
   const component = new WorkspaceLeafOpenLinkTextPatchComponent({
     app,
@@ -319,7 +325,7 @@ function createComponent(options: CreateComponentOptions = {}): CreateComponentR
     app,
     next,
     async openLinkText(linktext, sourcePath, openViewState): Promise<void> {
-      await patchedProto.openLinkText.call(strictProxy<WorkspaceLeafType>({}), linktext, sourcePath, openViewState);
+      await patchedPrototype.openLinkText.call(strictProxy<WorkspaceLeafType>({}), linktext, sourcePath, openViewState);
     }
   };
 }

@@ -29,7 +29,7 @@ import {
  * sanctioned return-value stub), NOT by re-creating any test-mocks class body.
  */
 
-const mockSearchFn = vi.fn();
+const mockSearchFunction = vi.fn();
 const mockSortSearchResults = vi.fn();
 const mockInvokeAsyncSafely = vi.fn();
 
@@ -60,7 +60,7 @@ interface FolderSelectorModalTestable {
   onNoSuggestion(): void;
   onOpen(): void;
   renderSuggestion(item: FuzzyMatch<null | TFolder>, el: HTMLElement): void;
-  selectSuggestion(value: FuzzyMatch<null | TFolder>, evt: KeyboardEvent | MouseEvent): void;
+  selectSuggestion(value: FuzzyMatch<null | TFolder>, $event: KeyboardEvent | MouseEvent): void;
   setPlaceholder(placeholder: string): void;
   updateSuggestions: ReturnType<typeof vi.fn>;
 }
@@ -68,9 +68,9 @@ interface FolderSelectorModalTestable {
 vi.mock('obsidian', async (importOriginal) => ({
   ...await importOriginal<typeof import('obsidian')>(),
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type -- mock factory return type is inferred.
-  prepareFuzzySearch: () => mockSearchFn,
+  prepareFuzzySearch: () => mockSearchFunction,
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  sortSearchResults: (...args: unknown[]): void => mockSortSearchResults(...args)
+  sortSearchResults: (...$arguments: unknown[]): void => mockSortSearchResults(...$arguments)
 }));
 
 vi.mock('obsidian-dev-utils/async', async (importOriginal) => ({
@@ -80,19 +80,19 @@ vi.mock('obsidian-dev-utils/async', async (importOriginal) => ({
    * create-folder flow becomes awaitable / synchronously drivable in tests.
    */
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- mock factory delegates to hoisted fn.
-  invokeAsyncSafely: (...args: unknown[]): void => mockInvokeAsyncSafely(...args)
+  invokeAsyncSafely: (...$arguments: unknown[]): void => mockInvokeAsyncSafely(...$arguments)
 }));
 
 // eslint-disable-next-line import-x/first, import-x/imports-first -- vi.mock must precede imports.
 import { selectFolder } from './folder-selector.ts';
 
-const fuzzySuggestModalProto = castTo<FolderSelectorModalTestable>(FuzzySuggestModal.prototype);
+const fuzzySuggestModalPrototype = castTo<FolderSelectorModalTestable>(FuzzySuggestModal.prototype);
 
 describe('selectFolder', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     mockInvokeAsyncSafely.mockReset();
-    mockSearchFn.mockReset();
+    mockSearchFunction.mockReset();
     mockSortSearchResults.mockReset();
 
     /*
@@ -101,10 +101,10 @@ describe('selectFolder', () => {
      * `this.updateSuggestions()` at the end of `onOpen`, which runs synchronously inside
      * `selectFolder` via the real `Modal.open()`, so its recorded `this` is the modal instance.
      */
-    fuzzySuggestModalProto.updateSuggestions = vi.fn();
-    fuzzySuggestModalProto.chooser = { setSuggestions: vi.fn() };
-    fuzzySuggestModalProto.getSuggestions = vi.fn().mockReturnValue([]);
-    fuzzySuggestModalProto.renderSuggestion = vi.fn();
+    fuzzySuggestModalPrototype.updateSuggestions = vi.fn();
+    fuzzySuggestModalPrototype.chooser = { setSuggestions: vi.fn() };
+    fuzzySuggestModalPrototype.getSuggestions = vi.fn().mockReturnValue([]);
+    fuzzySuggestModalPrototype.renderSuggestion = vi.fn();
   });
 
   afterEach(() => {
@@ -164,9 +164,11 @@ describe('selectFolder', () => {
 
     it('should resolve with created folder when vault.createFolder succeeds', async () => {
       const createdFolder = strictProxy<TFolder>({ path: 'new-folder' });
-      mockInvokeAsyncSafely.mockImplementation((fn: () => Promise<void>): void => {
-        fn().catch(() => {
-          /* Intentionally swallowed for test */
+      mockInvokeAsyncSafely.mockImplementation(($function: () => Promise<void>): void => {
+        $function().catch(() => {
+          /*
+          Intentionally swallowed for test
+          */
         });
       });
 
@@ -182,9 +184,11 @@ describe('selectFolder', () => {
     });
 
     it('should reopen modal with input value when vault.createFolder fails', async () => {
-      mockInvokeAsyncSafely.mockImplementation((fn: () => Promise<void>): void => {
-        fn().catch(() => {
-          /* Intentionally swallowed for test */
+      mockInvokeAsyncSafely.mockImplementation(($function: () => Promise<void>): void => {
+        $function().catch(() => {
+          /*
+          Intentionally swallowed for test
+          */
         });
       });
 
@@ -241,22 +245,22 @@ describe('selectFolder', () => {
       const results = instance.getSuggestions('');
 
       expect(results).toEqual([]);
-      expect(fuzzySuggestModalProto.getSuggestions).toHaveBeenCalled();
+      expect(fuzzySuggestModalPrototype.getSuggestions).toHaveBeenCalled();
       vi.runOnlyPendingTimers();
     });
 
     it('should delegate to super for whitespace-only query', () => {
       const { instance } = createModal('/');
 
-      const results = instance.getSuggestions('   ');
+      const results = instance.getSuggestions(' '.repeat(3));
 
       expect(results).toEqual([]);
-      expect(fuzzySuggestModalProto.getSuggestions).toHaveBeenCalled();
+      expect(fuzzySuggestModalPrototype.getSuggestions).toHaveBeenCalled();
       vi.runOnlyPendingTimers();
     });
 
     it('should return matching folders for non-empty query', () => {
-      mockSearchFn.mockReturnValue({ matches: [[0, 5]], score: -1 });
+      mockSearchFunction.mockReturnValue({ matches: [[0, 5]], score: -1 });
 
       const { instance } = createModal('/');
 
@@ -267,7 +271,7 @@ describe('selectFolder', () => {
     });
 
     it('should sort combined matches from multi-word queries', () => {
-      mockSearchFn.mockReturnValue({ matches: [[0, 3]], score: -1 });
+      mockSearchFunction.mockReturnValue({ matches: [[0, 3]], score: -1 });
 
       const { instance } = createModal('/');
 
@@ -278,7 +282,7 @@ describe('selectFolder', () => {
     });
 
     it('should not include unmatched folders', () => {
-      mockSearchFn.mockReturnValue(null);
+      mockSearchFunction.mockReturnValue(null);
 
       const { instance } = createModal('/');
 
@@ -290,7 +294,7 @@ describe('selectFolder', () => {
     });
 
     it('should prepend null item when first result path does not match query', () => {
-      mockSearchFn.mockReturnValue({ matches: [[0, 3]], score: -1 });
+      mockSearchFunction.mockReturnValue({ matches: [[0, 3]], score: -1 });
 
       const { instance } = createModal('/');
 
@@ -301,8 +305,8 @@ describe('selectFolder', () => {
     });
 
     it('should not prepend null item when first result path matches query exactly', () => {
-      mockSearchFn.mockReturnValue({ matches: [[0, 5]], score: -1 });
-      mockSortSearchResults.mockImplementation((arr: unknown[]) => arr);
+      mockSearchFunction.mockReturnValue({ matches: [[0, 5]], score: -1 });
+      mockSortSearchResults.mockImplementation((array: unknown[]) => array);
 
       const { instance } = createModal('/');
 
@@ -404,7 +408,7 @@ function createModal(initialQuery: string): CreateModalResult {
    * `selectFolder` synchronously runs the real `Modal.open()`, whose `onOpen` calls
    * `this.updateSuggestions()`. Recover the modal instance from the mock's recorded `this`.
    */
-  const contexts = vi.mocked(fuzzySuggestModalProto.updateSuggestions).mock.contexts;
+  const contexts = vi.mocked(fuzzySuggestModalPrototype.updateSuggestions).mock.contexts;
   const instance = castTo<FolderSelectorModalTestable | undefined>(contexts.at(-1));
   if (!instance) {
     throw new Error('Modal was not captured');

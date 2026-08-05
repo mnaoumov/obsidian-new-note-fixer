@@ -38,14 +38,14 @@ interface AppStatics {
   createConfigured__(): AppOriginal;
 }
 
-interface PatchedProto {
+interface PatchedPrototype {
   openLinkText?: WorkspaceLeaf['openLinkText'];
 }
 
 describe('Plugin', () => {
   afterEach(() => {
     // The patch component installs onto `WorkspaceLeaf.prototype` during load; unload restores it.
-    delete castTo<PatchedProto>(WorkspaceLeaf.prototype).openLinkText;
+    delete castTo<PatchedPrototype>(WorkspaceLeaf.prototype).openLinkText;
     vi.restoreAllMocks();
     vi.clearAllMocks();
   });

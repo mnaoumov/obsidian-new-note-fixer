@@ -50,20 +50,20 @@ class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
 
     for (const folder of folders) {
       const partMatches: SearchResult[] = [];
-      let allPartsMatch = true;
+      let isAllPartsMatch = true;
 
-      for (const searchFn of searchFunctions) {
-        const match = searchFn(folder.path);
+      for (const searchFunction of searchFunctions) {
+        const match = searchFunction(folder.path);
 
         if (match) {
           partMatches.push(match);
         } else {
-          allPartsMatch = false;
+          isAllPartsMatch = false;
           break;
         }
       }
 
-      if (allPartsMatch) {
+      if (isAllPartsMatch) {
         const totalScore = partMatches.reduce((sum, m) => sum + m.score, 0);
         const allMatches = partMatches.flatMap((m) => m.matches).sort((a, b) => a[0] - b[0]);
 
@@ -139,9 +139,9 @@ class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
     });
   }
 
-  public override selectSuggestion(value: FuzzyMatch<null | TFolder>, evt: KeyboardEvent | MouseEvent): void {
+  public override selectSuggestion(value: FuzzyMatch<null | TFolder>, $event: KeyboardEvent | MouseEvent): void {
     this.isSelected = true;
-    super.selectSuggestion(value, evt);
+    super.selectSuggestion(value, $event);
   }
 }
 

@@ -16,7 +16,7 @@
  */
 
 import { evalInObsidian } from 'obsidian-integration-testing';
-import { getTempVault } from 'obsidian-integration-testing/vitest-global-setup-plugin';
+import { getTemporaryVault } from 'obsidian-integration-testing/vitest-global-setup-plugin';
 import {
   describe,
   expect,
@@ -47,19 +47,7 @@ interface SettingsHost {
 describe('New note location - ask for current note folder first', () => {
   it('creates the new note in the current note folder when the confirm is accepted', async () => {
     const result = await evalInObsidian({
-      // eslint-disable-next-line unicorn/name-replacements -- `args` is an `obsidian-integration-testing` parameter name.
-      args: {
-        askMode: ASK_MODE,
-        expectedCreatedPath: EXPECTED_CREATED_PATH,
-        linkText: LINK_TEXT,
-        pluginId: PLUGIN_ID,
-        sourceContent: SOURCE_CONTENT,
-        sourceFolder: SOURCE_FOLDER,
-        sourcePath: SOURCE_PATH,
-        waitTimeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
-      },
-      // eslint-disable-next-line unicorn/name-replacements -- `fn` is an `obsidian-integration-testing` parameter name.
-      async fn({
+      async callback({
         app,
         askMode,
         expectedCreatedPath,
@@ -162,7 +150,17 @@ describe('New note location - ask for current note folder first', () => {
 
         return { createdPath, reason: '' };
       },
-      vaultPath: getTempVault().path
+      input: {
+        askMode: ASK_MODE,
+        expectedCreatedPath: EXPECTED_CREATED_PATH,
+        linkText: LINK_TEXT,
+        pluginId: PLUGIN_ID,
+        sourceContent: SOURCE_CONTENT,
+        sourceFolder: SOURCE_FOLDER,
+        sourcePath: SOURCE_PATH,
+        waitTimeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS
+      },
+      vaultPath: getTemporaryVault().path
     });
 
     expect(result.reason).toBe('');

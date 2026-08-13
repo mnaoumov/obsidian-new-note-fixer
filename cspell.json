@@ -18,7 +18,9 @@
     "obsidianmd",
     "tfile",
     "tfolder",
-    "tsbuildinfo"
+    "tsbuildinfo",
+    "wikilink",
+    "wikilinks"
   ],
   "ignoreWords": [],
   "import": [],

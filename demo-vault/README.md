@@ -1,3 +1,5 @@
+# New Note Fixer demo vault
+
 This is an [Obsidian](https://obsidian.md/) vault demonstrating features of the [New Note Fixer](https://github.com/mnaoumov/obsidian-new-note-fixer) plugin.
 
 ## Opening this vault

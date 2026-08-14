@@ -5,23 +5,43 @@
 [![GitHub downloads](https://img.shields.io/github/downloads/mnaoumov/obsidian-new-note-fixer/total)](https://github.com/mnaoumov/obsidian-new-note-fixer/releases)
 [![Coverage: 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/mnaoumov/obsidian-new-note-fixer)
 
-This is a plugin for [Obsidian](https://obsidian.md/) that unifies the way non-existing notes are created when clicking on their links.
+Clicking a link to a note that does not exist yet creates it — and where it lands depends on which
+*shape* the link has, in ways [Obsidian](https://obsidian.md/) never explains:
 
-When you click on a link `[[non-existing-note]]`, Obsidian creates a new note, whose location depends on `Settings → Files and links → Default location for new notes`.
+- `[[non-existing-note]]` respects `Settings → Files and links → Default location for new notes`.
+- `[[folder/non-existing-note]]` ignores that setting entirely and creates the note at the **vault
+  root**, under `folder/`.
+- `[[../folder/non-existing-note]]` creates a file **outside the vault**, does not open it, and on the
+  second click reports the misleading error `Folder already exists`.
 
-However, if your link is `[[folder/non-existing-note]]`, Obsidian will ignore the above-mentioned setting and create a new note in the `<vault root>/folder/non-existing-note.md`.
-
-Even more, if the link is `[[../folder/non-existing-note]]`, Obsidian will create a file outside of the vault root and won't open it. If you click on the link another time, Obsidian will show a misleading error message `Folder already exists`.
-
-This plugin fixes this behavior by respecting `Default location for new notes` setting for those cases.
+This plugin makes all three obey the setting you configured, so where a new note appears no longer
+depends on how the link that created it happened to be written.
 
 ## Demo vault
 
-A demo vault with usage examples ships with every release. You can access it via any of the following:
+**The documentation is a demo vault.** Every case has a note that explains what Obsidian does, what the
+plugin does instead, and a link you can click to watch it happen.
+
+**[Start reading here](<./demo-vault/00 Start.md>)** — it is plain markdown, so it works on GitHub with
+nothing installed.
+
+A copy of the vault ships with every release. You can access it via any of the following:
 
 1. Running the **New Note Fixer: Open demo vault** command.
 2. Downloading `new-note-fixer-demo-vault-<version>.zip` (`<version>` is the release version) from the [Releases](https://github.com/mnaoumov/obsidian-new-note-fixer/releases).
 3. Browsing its source in [`demo-vault/`](./demo-vault/README.md) in this repository.
+
+## What it does
+
+- **A link with a folder in it** stops ignoring your default-location setting.
+  [01 Subfolder link fix](<./demo-vault/01 Subfolder link fix.md>)
+- **A link that climbs out of the vault** (`../`) stops creating files outside it, and stops the
+  `Folder already exists` message that follows.
+  [02 Relative link fix](<./demo-vault/02 Relative link fix.md>)
+- **`Same folder as current file`** keeps working the way you would expect for every link shape.
+  [03 Current note folder](<./demo-vault/03 Current note folder.md>)
+- **Every setting**, by the key it is stored under.
+  [04 Settings](<./demo-vault/04 Settings.md>)
 
 ## Installation
 
@@ -46,6 +66,14 @@ window.DEBUG.enable('new-note-fixer');
 ```
 
 For more details, refer to the [documentation](https://mnaoumov.dev/obsidian-dev-utils/guides/debugging/).
+
+## Changelog
+
+All notable changes to this project will be documented in the [CHANGELOG](./CHANGELOG.md).
+
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING](./CONTRIBUTING.md) to get set up.
 
 ## Support
 

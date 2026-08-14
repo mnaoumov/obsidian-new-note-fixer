@@ -17,8 +17,11 @@ By default New Note Fixer places a new note under your **Default location for ne
 
 ## What it does
 
-- **Fluid same-folder creation** - the new note lands next to the note you are working in without you retyping the path.
-- **Still your choice** - the confirm only *pre-fills* the picker; you can always override the folder before creating.
-- **Falls back cleanly** - if there is no open source note, New Note Fixer skips the question and behaves like **Prompt for folder**.
+- **Fluid same-folder creation**
+  - the new note lands next to the note you are working in without you retyping the path.
+- **Still your choice**
+  - the confirm only *pre-fills* the picker; you can always override the folder before creating.
+- **Falls back cleanly**
+  - if there is no open source note, New Note Fixer skips the question and behaves like **Prompt for folder**.
 
 The other placement modes - **Default location** and **Prompt for folder** - are described in [04 Settings](<./04 Settings.md>). See also [01 Subfolder link fix](<./01 Subfolder link fix.md>) and [02 Relative link fix](<./02 Relative link fix.md>).

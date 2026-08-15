@@ -2,6 +2,31 @@
 
 Open **Settings -> Community plugins -> New Note Fixer** to configure the plugin. The option below lists the setting key stored in the plugin's `data.json`.
 
+Each mode has a button, so you can try one and come straight back. They apply live - the plugin's own settings component saves them, so there is no reload:
+
+```code-button
+---
+caption: Mode - Default location
+---
+await require('/demoSetup.ts').setNoteLocationMode(app, 'Default location');
+```
+
+```code-button
+---
+caption: Mode - Prompt for folder
+---
+await require('/demoSetup.ts').setNoteLocationMode(app, 'Prompt for folder');
+```
+
+```code-button
+---
+caption: Mode - Ask for current note folder first
+---
+await require('/demoSetup.ts').setNoteLocationMode(app, 'Ask for current note folder first');
+```
+
+Manual equivalent for all three: pick the mode from the **New note location** dropdown below.
+
 ## New note location
 
 - `newNoteLocationMode`

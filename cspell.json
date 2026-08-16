@@ -19,6 +19,8 @@
     "tfile",
     "tfolder",
     "tsbuildinfo",
+    "unvalidated",
+    "wdio",
     "wikilink",
     "wikilinks"
   ],

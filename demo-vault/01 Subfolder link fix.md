@@ -6,20 +6,22 @@ When you click a link to a non-existing note, Obsidian creates the note for you.
 
 <!-- obsidian-dev-utils-disable demo-vault-validation/no-wikilinks -- Clicking a link to a note that does not exist yet IS the feature, and a Markdown link to a missing note fails lint:md. -->
 
-1. Point Obsidian's default location somewhere obvious, so the difference is visible:
+First, point Obsidian's default location somewhere obvious, so the difference is visible:
 
-   ```code-button
-   ---
-   caption: Default new notes to an Inbox folder
-   ---
-   await require('/demoSetup.ts').useInboxAsDefaultLocation(app);
-   ```
+```code-button
+---
+caption: Default new notes to an Inbox folder
+---
+await require('/demoSetup.ts').useInboxAsDefaultLocation(app);
+```
 
-   Manual equivalent: create a folder named `Inbox`, then set **Settings -> Files and links -> Default location for new notes** to **In the folder specified below** and choose it. The folder must already exist - Obsidian silently falls back to the vault root otherwise, which looks just like the bug this plugin fixes.
+Manual equivalent: create a folder named `Inbox`, then set **Settings -> Files and links -> Default location for new notes** to **In the folder specified below** and choose it. The folder must already exist - Obsidian silently falls back to the vault root otherwise, which looks just like the bug this plugin fixes.
 
-2. Come back to this note and click this link to a note that does not exist yet: [[Projects/Fresh idea]].
-3. New Note Fixer creates and opens the note under your default location - `Inbox/Projects/Fresh idea.md` - instead of the vault-root `Projects/Fresh idea.md` that plain Obsidian would make.
-4. The link in this note is rewritten to point at the note that was actually created, so it keeps working.
+Then:
+
+1. Come back to this note and click this link to a note that does not exist yet: [[Projects/Fresh idea]].
+2. New Note Fixer creates and opens the note under your default location - `Inbox/Projects/Fresh idea.md` - instead of the vault-root `Projects/Fresh idea.md` that plain Obsidian would make.
+3. The link in this note is rewritten to point at the note that was actually created, so it keeps working.
 
 <!-- obsidian-dev-utils-enable demo-vault-validation/no-wikilinks -->
 

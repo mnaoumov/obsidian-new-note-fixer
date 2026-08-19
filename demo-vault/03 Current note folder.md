@@ -6,22 +6,24 @@ By default New Note Fixer places a new note under your **Default location for ne
 
 <!-- obsidian-dev-utils-disable demo-vault-validation/no-wikilinks -- Clicking a link to a note that does not exist yet IS the feature, and a Markdown link to a missing note fails lint:md. -->
 
-1. Switch the mode:
+First, switch the mode:
 
-   ```code-button
-   ---
-   caption: Ask for the current note's folder first
-   ---
-   await require('/demoSetup.ts').setNoteLocationMode(app, 'Ask for current note folder first');
-   ```
+```code-button
+---
+caption: Ask for the current note's folder first
+---
+await require('/demoSetup.ts').setNoteLocationMode(app, 'Ask for current note folder first');
+```
 
-   Manual equivalent: set **New note location** to **Ask for current note folder first** in [04 Settings](<./04 Settings.md>).
+Manual equivalent: set **New note location** to **Ask for current note folder first** in [04 Settings](<./04 Settings.md>).
 
-2. Come back to this note (it lives in the vault root, but the mode works from any folder) and click this link to a note that does not exist yet: [[Sibling note]].
-3. A dialog asks **"Create the new note in the current note's folder (...)?"**.
+Then:
+
+1. Come back to this note (it lives in the vault root, but the mode works from any folder) and click this link to a note that does not exist yet: [[Sibling note]].
+2. A dialog asks **"Create the new note in the current note's folder (...)?"**.
    - Click **OK** to open the folder picker pre-filled with this note's folder - press Enter to accept it, or adjust the folder first.
    - Click **Cancel** to open the folder picker pre-filled with your default location instead.
-4. The new note is created in the folder you accepted, and the clicked link is repaired to point at it.
+3. The new note is created in the folder you accepted, and the clicked link is repaired to point at it.
 
 <!-- obsidian-dev-utils-enable demo-vault-validation/no-wikilinks -->
 

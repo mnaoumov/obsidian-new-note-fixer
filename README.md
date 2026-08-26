@@ -1,32 +1,27 @@
 # New Note Fixer
 
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/mnaoumov)
-[![GitHub release](https://img.shields.io/github/v/release/mnaoumov/obsidian-new-note-fixer)](https://github.com/mnaoumov/obsidian-new-note-fixer/releases)
-[![GitHub downloads](https://img.shields.io/github/downloads/mnaoumov/obsidian-new-note-fixer/total)](https://github.com/mnaoumov/obsidian-new-note-fixer/releases)
-[![Coverage: 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/mnaoumov/obsidian-new-note-fixer)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/mnaoumov) [![GitHub release](https://img.shields.io/github/v/release/mnaoumov/obsidian-new-note-fixer)](https://github.com/mnaoumov/obsidian-new-note-fixer/releases) [![GitHub downloads](https://img.shields.io/github/downloads/mnaoumov/obsidian-new-note-fixer/total)](https://github.com/mnaoumov/obsidian-new-note-fixer/releases) [![Coverage: 100%](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/mnaoumov/obsidian-new-note-fixer)
 
-Clicking a link to a note that does not exist yet creates it — and where it lands depends on which
-*shape* the link has, in ways [Obsidian](https://obsidian.md/) never explains:
+Clicking a link to a note that does not exist yet creates it — and where it lands depends on which *shape* the link has, in ways [Obsidian](https://obsidian.md/) never explains:
 
 - `[[non-existing-note]]` respects `Settings → Files and links → Default location for new notes`.
-- `[[folder/non-existing-note]]` ignores that setting entirely and creates the note at the **vault
-  root**, under `folder/`.
-- `[[../folder/non-existing-note]]` creates a file **outside the vault**, does not open it, and on the
-  second click reports the misleading error `Folder already exists`.
+- `[[folder/non-existing-note]]` ignores that setting entirely and creates the note at the **vault root**, under `folder/`.
+- `[[../folder/non-existing-note]]` creates a file **outside the vault**, does not open it, and on the second click reports the misleading error `Folder already exists`.
 
-This plugin makes all three obey the setting you configured, so where a new note appears no longer
-depends on how the link that created it happened to be written.
+This plugin makes all three obey the setting you configured, so where a new note appears no longer depends on how the link that created it happened to be written.
 
 <!-- markdownlint-disable MD033 -->
 
-<a href="images/screenshots/screenshot-desktop-1.png"><img src="images/screenshots/screenshot-desktop-1.png" alt="Without the plugin: a new note lands at the vault root" width="600"></a>
+<a href="https://github.com/mnaoumov/obsidian-new-note-fixer/blob/HEAD/images/screenshots/screenshot-desktop-1.png"><img src="images/screenshots/screenshot-desktop-1.png" alt="Without the plugin: a new note lands at the vault root" width="600"></a>
 
 <details>
 <summary>More screenshots</summary>
 
-<a href="images/screenshots/screenshot-desktop-2.png"><img src="images/screenshots/screenshot-desktop-2.png" alt="With it: your default location for new notes is honored" width="600"></a>
-<a href="images/screenshots/screenshot-mobile-1.png"><img src="images/screenshots/screenshot-mobile-1.png" alt="Without the plugin: a new note lands at the vault root" width="270"></a>
-<a href="images/screenshots/screenshot-mobile-2.png"><img src="images/screenshots/screenshot-mobile-2.png" alt="With it: your default location for new notes is honored" width="270"></a>
+<div>
+<a href="https://github.com/mnaoumov/obsidian-new-note-fixer/blob/HEAD/images/screenshots/screenshot-desktop-2.png"><img src="images/screenshots/screenshot-desktop-2.png" alt="With it: your default location for new notes is honored" width="600"></a>
+<a href="https://github.com/mnaoumov/obsidian-new-note-fixer/blob/HEAD/images/screenshots/screenshot-mobile-1.png"><img src="images/screenshots/screenshot-mobile-1.png" alt="Without the plugin: a new note lands at the vault root" width="270"></a>
+<a href="https://github.com/mnaoumov/obsidian-new-note-fixer/blob/HEAD/images/screenshots/screenshot-mobile-2.png"><img src="images/screenshots/screenshot-mobile-2.png" alt="With it: your default location for new notes is honored" width="270"></a>
+</div>
 
 </details>
 
@@ -34,11 +29,9 @@ depends on how the link that created it happened to be written.
 
 ## Demo vault
 
-**The documentation is a demo vault.** Every case has a note that explains what Obsidian does, what the
-plugin does instead, and a link you can click to watch it happen.
+**The documentation is a demo vault.** Every case has a note that explains what Obsidian does, what the plugin does instead, and a link you can click to watch it happen.
 
-**[Start reading here](<./demo-vault/00 Start.md>)** — it is plain markdown, so it works on GitHub with
-nothing installed.
+**[Start reading here](<./demo-vault/00 Start.md>)** — it is plain markdown, so it works on GitHub with nothing installed.
 
 A copy of the vault ships with every release. You can access it via any of the following:
 
@@ -48,15 +41,10 @@ A copy of the vault ships with every release. You can access it via any of the f
 
 ## What it does
 
-- **A link with a folder in it** stops ignoring your default-location setting.
-  [01 Subfolder link fix](<./demo-vault/01 Subfolder link fix.md>)
-- **A link that climbs out of the vault** (`../`) stops creating files outside it, and stops the
-  `Folder already exists` message that follows.
-  [02 Relative link fix](<./demo-vault/02 Relative link fix.md>)
-- **`Same folder as current file`** keeps working the way you would expect for every link shape.
-  [03 Current note folder](<./demo-vault/03 Current note folder.md>)
-- **Every setting**, by the key it is stored under.
-  [04 Settings](<./demo-vault/04 Settings.md>)
+- **A link with a folder in it** stops ignoring your default-location setting. [01 Subfolder link fix](<./demo-vault/01 Subfolder link fix.md>)
+- **A link that climbs out of the vault** (`../`) stops creating files outside it, and stops the `Folder already exists` message that follows. [02 Relative link fix](<./demo-vault/02 Relative link fix.md>)
+- **`Same folder as current file`** keeps working the way you would expect for every link shape. [03 Current note folder](<./demo-vault/03 Current note folder.md>)
+- **Every setting**, by the key it is stored under. [04 Settings](<./demo-vault/04 Settings.md>)
 
 ## Installation
 

@@ -36,7 +36,7 @@ This plugin makes all three obey the setting you configured, so where a new note
 A copy of the vault ships with every release. You can access it via any of the following:
 
 1. Running the **New Note Fixer: Open demo vault** command.
-2. Downloading `new-note-fixer-demo-vault-<version>.zip` (`<version>` is the release version) from the [Releases](https://github.com/mnaoumov/obsidian-new-note-fixer/releases).
+2. Downloading `new-note-fixer-demo-vault.zip` from the [Releases](https://github.com/mnaoumov/obsidian-new-note-fixer/releases). It unzips into a single `new-note-fixer-demo-vault-<version>` folder.
 3. Browsing its source in [`demo-vault/`](./demo-vault/README.md) in this repository.
 
 ## What it does

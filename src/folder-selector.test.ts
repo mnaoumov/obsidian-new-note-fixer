@@ -347,6 +347,32 @@ describe('selectFolder', () => {
       expect(instance.updateSuggestions).toHaveBeenCalled();
       vi.runOnlyPendingTimers();
     });
+
+    /*
+     * The box always offers to CREATE the folder named in it, so it is a name field at all times. Both
+     * cases read the ATTRIBUTE rather than the `spellcheck` IDL property, because the value being
+     * corrected — the `spellcheck="false"` Obsidian hardcodes onto every `SuggestModal` input — is itself
+     * an attribute, and the IDL property reports a default for a missing one.
+     */
+    it('should spell-check the box when the vault asks for it', () => {
+      const { instance } = createModal('my-folder', true);
+
+      instance.onOpen();
+
+      expect(instance.inputEl.getAttribute('spellcheck')).toBe('true');
+      vi.runOnlyPendingTimers();
+    });
+
+    it('should not spell-check the box when the vault has spell check off', () => {
+      // Read in both directions on purpose: a single reading with the setting ON is indistinguishable
+      // From a box that is simply always checked, so only the pair proves it FOLLOWS the setting.
+      const { instance } = createModal('my-folder', false);
+
+      instance.onOpen();
+
+      expect(instance.inputEl.getAttribute('spellcheck')).toBe('false');
+      vi.runOnlyPendingTimers();
+    });
   });
 
   describe('FolderSelectorModal.onNoSuggestion', () => {
@@ -394,11 +420,13 @@ describe('selectFolder', () => {
   });
 });
 
-function createModal(initialQuery: string): CreateModalResult {
+function createModal(initialQuery: string, isSpellcheckEnabled = false): CreateModalResult {
   const mockApp = strictProxy<App>({
     vault: strictProxy<App['vault']>({
       createFolder: vi.fn(),
-      getAllFolders: vi.fn().mockReturnValue(mockFolders)
+      getAllFolders: vi.fn().mockReturnValue(mockFolders),
+      // Only ever asked for `spellcheck`, by the `onOpen` call that decides whether the box is checked.
+      getConfig: castTo<App['vault']['getConfig']>(vi.fn((key: string) => key === 'spellcheck' ? isSpellcheckEnabled : undefined))
     })
   });
 

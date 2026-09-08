@@ -11,6 +11,8 @@ import {
   sortSearchResults
 } from 'obsidian';
 import { invokeAsyncSafely } from 'obsidian-dev-utils/async';
+import { applySpellcheckMode } from 'obsidian-dev-utils/obsidian/html-element';
+import { SpellcheckMode } from 'obsidian-dev-utils/obsidian/obsidian-settings';
 
 interface FolderSelectorModalConstructorParams {
   readonly app: App;
@@ -118,6 +120,21 @@ class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
   public override onOpen(): void {
     super.onOpen();
     this.setPlaceholder('Select a folder...');
+    /*
+     * Obsidian builds every `SuggestModal` input with a hardcoded `spellcheck="false"` and never consults
+     * `Editor > Spellcheck`. Right for a box that only FINDS a folder, but this one always offers to
+     * CREATE the folder named in it — the top row is `Enter to create`, and `onChooseItem` passes
+     * `inputEl.value` straight to `vault.createFolder`. So it is a name field at all times, not only in
+     * some mode, which is why the setting is followed unconditionally here.
+     *
+     * A folder name is a PATH, so segments get checked too. That is what Obsidian's own inline rename
+     * does, and the alternative — checking only the last segment — cannot be expressed as an attribute.
+     */
+    applySpellcheckMode({
+      app: this.app,
+      element: this.inputEl,
+      spellcheckMode: SpellcheckMode.FollowObsidianSetting
+    });
     this.inputEl.value = this.initialQuery;
     this.updateSuggestions();
   }

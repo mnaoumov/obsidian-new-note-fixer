@@ -30,7 +30,15 @@ const SOURCE_PATH = `${SOURCE_FOLDER}/nnf-source.md`;
 const LINK_TEXT = 'nnf-brand-new-note';
 const SOURCE_CONTENT = `[[${LINK_TEXT}]]`;
 const EXPECTED_CREATED_PATH = `${SOURCE_FOLDER}/${LINK_TEXT}.md`;
-const WAIT_TIMEOUT_IN_MILLISECONDS = 20_000;
+/*
+ * Under the transport's ~30s per-closure cap, not at it.
+ * Four waits share this one budget, so at 20_000 apiece the closure declared 80s.
+ * The eval is killed at the cap first and reported as a bare transport timeout.
+ * That names the harness rather than the wait that overran.
+ * Every wait here is a view activating or a modal opening, which lands in well under a second.
+ * The constant feeds nothing but the closure's own input, so the smaller budget reaches no Node-side wait.
+ */
+const WAIT_TIMEOUT_IN_MILLISECONDS = 6000;
 
 interface ComponentNode {
   _children?: ComponentNode[];

@@ -13,7 +13,7 @@
  * The picker is reached the way a user reaches it: follow a link to a non-existing note in the
  * "Ask for current note folder first" mode, answer the confirm, and the picker opens.
  *
- * Named `*.cross-platform.integration.test.ts` (per G47), so the desktop AND android projects both
+ * Named `*.cross-platform.integration.test.ts`, so the desktop AND android projects both
  * collect it.
  */
 

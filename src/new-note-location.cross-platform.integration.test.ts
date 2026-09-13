@@ -11,7 +11,7 @@
  * plugin's own fuzzy folder picker is accepted at its pre-filled current-note folder. The assertion
  * is the observable effect — the new note is created inside the current note's folder.
  *
- * Named `*.cross-platform.integration.test.ts` (per G47), so the desktop AND android projects both
+ * Named `*.cross-platform.integration.test.ts`, so the desktop AND android projects both
  * collect it and the same flow is verified on each.
  */
 

@@ -60,7 +60,7 @@
 ## 2.0.11
 
 - docs: standardize demo-vault README
-- docs: drop per-plugin demo-vault setup notes (bootstrap covered by ODU harness)
+- docs: drop per-plugin demo-vault setup notes (bootstrap covered by the obsidian-dev-utils harness)
 - docs(demo-vault): create the New Note Fixer demo vault
 - chore: update libs
 - chore: update libs

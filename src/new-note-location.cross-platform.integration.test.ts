@@ -7,7 +7,7 @@
  * note's folder via a confirm dialog that pre-fills the folder picker.
  *
  * The flow driven here is exactly the one a user drives: the plugin's `WorkspaceLeaf.openLinkText`
- * patch fires when the link is followed, the ODU `confirm` modal is answered with OK, and the
+ * patch fires when the link is followed, the `confirm` modal from `obsidian-dev-utils` is answered with OK, and the
  * plugin's own fuzzy folder picker is accepted at its pre-filled current-note folder. The assertion
  * is the observable effect — the new note is created inside the current note's folder.
  *

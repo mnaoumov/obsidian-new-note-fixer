@@ -365,7 +365,7 @@ describe('selectFolder', () => {
 
     it('should not spell-check the box when the vault has spell check off', () => {
       // Read in both directions on purpose: a single reading with the setting ON is indistinguishable
-      // From a box that is simply always checked, so only the pair proves it FOLLOWS the setting.
+      // from a box that is simply always checked, so only the pair proves it FOLLOWS the setting.
       const { instance } = createModal('my-folder', false);
 
       instance.onOpen();

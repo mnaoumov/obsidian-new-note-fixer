@@ -82,7 +82,7 @@ beforeAll(async () => {
   await evalInObsidian({
     async callback({ app, fontSizeInPixels, lib: { waitUntil }, newNoteFolder, sourceNotePath }) {
       // A closure runs inside ONE Appium execute/sync call, which WebDriver caps
-      // Around 30s, so every wait in here stays comfortably under it.
+      // around 30s, so every wait in here stays comfortably under it.
       const SETTLE_TIMEOUT_IN_MILLISECONDS = 15_000;
       const SETTLE_DELAY_IN_MILLISECONDS = 1000;
 
@@ -112,8 +112,8 @@ beforeAll(async () => {
 describe('mobile store screenshots', () => {
   it('1 - where the note lands without the plugin', async () => {
     // A before-shot is only safe BECAUSE of the caption. A listing carousel
-    // Shows screenshots one at a time, so an unlabelled one reads as a picture
-    // Of what the plugin does, not of what it fixes.
+    // shows screenshots one at a time, so an unlabelled one reads as a picture
+    // of what the plugin does, not of what it fixes.
     await setPluginEnabled(false);
     const createdPath = await clickUnresolvedLink(UNFIXED_LINK);
     // At the vault ROOT, ignoring the folder the vault was told to use.
@@ -155,7 +155,7 @@ async function clickUnresolvedLink(linkText: string): Promise<string> {
       const SETTLE_DELAY_IN_MILLISECONDS = 1500;
 
       // Let the previous shot's capture settle: the device-metrics override it
-      // Sets and clears disturbs anything driven too soon afterwards.
+      // sets and clears disturbs anything driven too soon afterwards.
       const sourceFile = app.vault.getFileByPath(sourceNotePath);
       if (!sourceFile) {
         throw new Error(`Note is missing from the vault: ${sourceNotePath}`);
@@ -165,8 +165,8 @@ async function clickUnresolvedLink(linkText: string): Promise<string> {
       await leaf.openFile(sourceFile);
 
       // The plugin patches `WorkspaceLeaf.openLinkText`, which is exactly what
-      // Clicking an unresolved link calls — so this drives the real path rather
-      // Than a simulation of it.
+      // clicking an unresolved link calls — so this drives the real path rather
+      // than a simulation of it.
       await leaf.openLinkText(link, sourceNotePath);
 
       await waitUntil({
@@ -222,8 +222,8 @@ async function shoot(index: number, caption: string): Promise<void> {
   const captured = await captureObsidianScreenshot({ vaultPath: vaultPath() });
 
   // The AVD is 900x1600, so the device frame IS the store size. Asserting it
-  // Here is what keeps that true: run this against any other AVD and it fails
-  // Loudly instead of quietly shipping an off-spec image.
+  // here is what keeps that true: run this against any other AVD and it fails
+  // loudly instead of quietly shipping an off-spec image.
   expect(readPngDimensions(captured)).toStrictEqual({
     heightInPixels: HEIGHT_IN_PIXELS,
     widthInPixels: WIDTH_IN_PIXELS

@@ -83,7 +83,7 @@ describe('spell checking the folder picker box', () => {
         }
 
         // The settings component is not a direct child of the plugin: PluginBase.addChild delegates
-        // To an internal wrapper component, so it lives deeper in the `_children` tree. Search it.
+        // to an internal wrapper component, so it lives deeper in the `_children` tree. Search it.
         function findSettingsComponent(root: ComponentNode): SettingsHost | undefined {
           const stack: ComponentNode[] = [root];
           const seen = new Set<ComponentNode>();
@@ -125,7 +125,7 @@ describe('spell checking the folder picker box', () => {
           });
 
           // Following the link fires the patch, which awaits the confirm modal then the folder picker,
-          // So the promise only settles after we drive both — do NOT await it before interacting.
+          // so the promise only settles after we drive both — do NOT await it before interacting.
           const openPromise = leaf.openLinkText(linkText, sourcePath);
           openPromise.catch(() => {
             // The patch's internal errors would surface as a picker that never opens, which the waits below report.
@@ -165,7 +165,7 @@ describe('spell checking the folder picker box', () => {
           });
 
           // Read in both directions on purpose: a single reading with the setting ON is indistinguishable
-          // From a box that is simply always checked, so only the pair proves it FOLLOWS the setting.
+          // from a box that is simply always checked, so only the pair proves it FOLLOWS the setting.
           const whenEnabled = await readSpellcheckAttribute(true);
           const whenDisabled = await readSpellcheckAttribute(false);
 

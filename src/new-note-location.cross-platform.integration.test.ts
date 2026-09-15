@@ -78,7 +78,7 @@ describe('New note location - ask for current note folder first', () => {
         }
 
         // The settings component is not a direct child of the plugin: PluginBase.addChild delegates
-        // To an internal wrapper component, so it lives deeper in the `_children` tree. Search it.
+        // to an internal wrapper component, so it lives deeper in the `_children` tree. Search it.
         function findSettingsComponent(root: ComponentNode): SettingsHost | undefined {
           const stack: ComponentNode[] = [root];
           const seen = new Set<ComponentNode>();
@@ -122,7 +122,7 @@ describe('New note location - ask for current note folder first', () => {
         });
 
         // Following the link fires the patch, which awaits the confirm modal then the folder picker,
-        // So the promise only settles after we drive both — do NOT await it before interacting.
+        // so the promise only settles after we drive both — do NOT await it before interacting.
         const openPromise = leaf.openLinkText(linkText, sourcePath);
         openPromise.catch(() => {
           // The patch's internal errors are surfaced via the file-existence assertion below.

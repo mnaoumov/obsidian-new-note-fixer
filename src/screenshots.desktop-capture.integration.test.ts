@@ -104,8 +104,8 @@ beforeAll(async () => {
 describe('desktop store screenshots', () => {
   it('1 - where the note lands without the plugin', async () => {
     // A before-shot is only safe BECAUSE of the caption. A listing carousel
-    // Shows screenshots one at a time, so an unlabelled one reads as a picture
-    // Of what the plugin does, not of what it fixes.
+    // shows screenshots one at a time, so an unlabelled one reads as a picture
+    // of what the plugin does, not of what it fixes.
     await setPluginEnabled(false);
     const createdPath = await clickUnresolvedLink(UNFIXED_LINK);
     // At the vault ROOT, ignoring the folder the vault was told to use.
@@ -148,7 +148,7 @@ async function clickUnresolvedLink(linkText: string): Promise<string> {
       const RESIZE_SETTLE_DELAY_IN_MILLISECONDS = 2000;
 
       // Let the previous shot's capture settle: the device-metrics override it
-      // Sets and clears disturbs anything driven too soon afterwards.
+      // sets and clears disturbs anything driven too soon afterwards.
       await sleep(RESIZE_SETTLE_DELAY_IN_MILLISECONDS);
 
       const sourceFile = app.vault.getFileByPath(sourceNotePath);
@@ -160,8 +160,8 @@ async function clickUnresolvedLink(linkText: string): Promise<string> {
       await leaf.openFile(sourceFile);
 
       // The plugin patches `WorkspaceLeaf.openLinkText`, which is exactly what
-      // Clicking an unresolved link calls — so this drives the real path rather
-      // Than a simulation of it.
+      // clicking an unresolved link calls — so this drives the real path rather
+      // than a simulation of it.
       await leaf.openLinkText(link, sourceNotePath);
 
       await waitUntil({

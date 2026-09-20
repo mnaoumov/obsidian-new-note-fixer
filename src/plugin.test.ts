@@ -31,11 +31,11 @@ import { Plugin } from './plugin.ts';
  */
 
 interface AppOriginal {
-  asOriginalType__(): AppType;
+  asOriginalType__: () => AppType;
 }
 
 interface AppStatics {
-  createConfigured__(): AppOriginal;
+  createConfigured__: () => AppOriginal;
 }
 
 interface PatchedPrototype {

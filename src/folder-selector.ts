@@ -17,7 +17,7 @@ import { SpellcheckMode } from 'obsidian-dev-utils/obsidian/obsidian-settings';
 interface FolderSelectorModalConstructorParams {
   readonly app: App;
   readonly initialQuery: string;
-  resolve(this: void, folder: null | TFolder): void;
+  readonly resolve: (this: void, folder: null | TFolder) => void;
 }
 
 class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {

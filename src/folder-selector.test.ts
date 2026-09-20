@@ -51,17 +51,17 @@ interface CreateModalResult {
 interface FolderSelectorModalTestable {
   app: App;
   chooser: ChooserStub;
-  getItems(): TFolder[];
-  getItemText(item: null | TFolder): string;
-  getSuggestions(query: string): FuzzyMatch<null | TFolder>[];
+  getItems: () => TFolder[];
+  getItemText: (item: null | TFolder) => string;
+  getSuggestions: (query: string) => FuzzyMatch<null | TFolder>[];
   inputEl: HTMLInputElement;
-  onChooseItem(item: null | TFolder): void;
-  onClose(): void;
-  onNoSuggestion(): void;
-  onOpen(): void;
-  renderSuggestion(item: FuzzyMatch<null | TFolder>, el: HTMLElement): void;
-  selectSuggestion(value: FuzzyMatch<null | TFolder>, $event: KeyboardEvent | MouseEvent): void;
-  setPlaceholder(placeholder: string): void;
+  onChooseItem: (item: null | TFolder) => void;
+  onClose: () => void;
+  onNoSuggestion: () => void;
+  onOpen: () => void;
+  renderSuggestion: (item: FuzzyMatch<null | TFolder>, el: HTMLElement) => void;
+  selectSuggestion: (value: FuzzyMatch<null | TFolder>, $event: KeyboardEvent | MouseEvent) => void;
+  setPlaceholder: (placeholder: string) => void;
   updateSuggestions: ReturnType<typeof vi.fn>;
 }
 

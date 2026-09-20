@@ -34,13 +34,17 @@ const SOURCE_CONTENT = `[[${LINK_TEXT}]]`;
 const EXPECTED_CREATED_PATH = `${SOURCE_FOLDER}/${LINK_TEXT}.md`;
 /*
  * Under the transport's ~30s per-closure cap, not at it.
- * Three waits share this one budget, so at 20_000 apiece the closure declared 60s.
+ * Sized by the whole closure's worst case, which is the helper's own budget times its CALL COUNT:
+ * `readSpellcheckAttribute` holds three waits and is called twice, once per spellcheck direction,
+ * so the single transport call declares 6x this number and at 8_000 apiece that was 48s.
  * The eval is killed at the cap first and reported as a bare transport timeout.
  * That names the harness rather than the wait that overran.
  * Every wait here is a view activating or a modal opening, which lands in well under a second.
+ * 6 x 3_000 = 18s, lower than the 24s the same waits get straight-line in `new-note-location`:
+ * this closure drives the whole flow twice, so the non-waiting work under the cap is doubled too.
  * The constant feeds nothing but the closure's own input, so the smaller budget reaches no Node-side wait.
  */
-const WAIT_TIMEOUT_IN_MILLISECONDS = 8000;
+const WAIT_TIMEOUT_IN_MILLISECONDS = 3000;
 
 interface ComponentNode {
   _children?: ComponentNode[];

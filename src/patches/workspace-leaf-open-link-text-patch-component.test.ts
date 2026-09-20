@@ -81,11 +81,11 @@ interface CreateComponentOptions {
 interface CreateComponentResult {
   readonly app: App;
   readonly next: ReturnType<typeof vi.fn>;
-  openLinkText(linktext: string, sourcePath: string, openViewState?: OpenViewState): Promise<void>;
+  readonly openLinkText: (linktext: string, sourcePath: string, openViewState?: OpenViewState) => Promise<void>;
 }
 
 interface EditLinksMockParams {
-  linkConverter(link: LinkInfo): unknown;
+  readonly linkConverter: (link: LinkInfo) => unknown;
 }
 
 interface LinkInfo {

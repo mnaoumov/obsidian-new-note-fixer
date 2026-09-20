@@ -48,7 +48,7 @@ const WAIT_TIMEOUT_IN_MILLISECONDS = 3000;
 
 interface ComponentNode {
   _children?: ComponentNode[];
-  editAndSave?(settingsEditor: (settings: EditableSettings) => void): Promise<void>;
+  editAndSave?: (settingsEditor: (settings: EditableSettings) => void) => Promise<void>;
 }
 
 interface EditableSettings {
@@ -56,7 +56,7 @@ interface EditableSettings {
 }
 
 interface SettingsHost {
-  editAndSave(settingsEditor: (settings: EditableSettings) => void): Promise<void>;
+  editAndSave: (settingsEditor: (settings: EditableSettings) => void) => Promise<void>;
 }
 
 describe('spell checking the folder picker box', () => {

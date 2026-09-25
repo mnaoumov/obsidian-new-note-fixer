@@ -65,18 +65,20 @@ class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
         }
       }
 
-      if (isAllPartsMatch) {
-        const totalScore = partMatches.reduce((sum, m) => sum + m.score, 0);
-        const allMatches = partMatches.flatMap((m) => m.matches).sort((a, b) => a[0] - b[0]);
-
-        results.push({
-          item: folder,
-          match: {
-            matches: allMatches,
-            score: totalScore
-          }
-        });
+      if (!isAllPartsMatch) {
+        continue;
       }
+
+      const totalScore = partMatches.reduce((sum, m) => sum + m.score, 0);
+      const allMatches = partMatches.flatMap((m) => m.matches).sort((a, b) => a[0] - b[0]);
+
+      results.push({
+        item: folder,
+        match: {
+          matches: allMatches,
+          score: totalScore
+        }
+      });
     }
 
     sortSearchResults(results);

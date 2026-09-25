@@ -122,6 +122,30 @@ describe('desktop store screenshots', () => {
 });
 
 /**
+ * Takes focus away from the editor, so the frame does not depend on where the
+ * caret's blink cycle happens to be when it is captured. Blurred rather than
+ * hidden with CSS: an unfocused editor is a state Obsidian really renders, and
+ * the frames are about the file explorer, not the caret.
+ *
+ * @returns A {@link Promise} that resolves once focus is gone and the window has repainted.
+ */
+async function blurEditor(): Promise<void> {
+  await evalInObsidian({
+    async callback(): Promise<void> {
+      const REPAINT_DELAY_IN_MILLISECONDS = 500;
+
+      const focusedEl: unknown = document.activeElement;
+      if (focusedEl instanceof HTMLElement) {
+        focusedEl.blur();
+      }
+
+      await sleep(REPAINT_DELAY_IN_MILLISECONDS);
+    },
+    vaultPath: vaultPath()
+  });
+}
+
+/**
  * Builds the note the links are clicked from.
  *
  * @returns The note's Markdown.
@@ -214,6 +238,8 @@ async function setPluginEnabled(isEnabled: boolean): Promise<void> {
  * @param caption - The caption drawn across the bottom of the frame.
  */
 async function shoot(index: number, caption: string): Promise<void> {
+  await blurEditor();
+
   const bytes = await captureObsidianScreenshot({
     heightInPixels: HEIGHT_IN_PIXELS,
     vaultPath: vaultPath(),

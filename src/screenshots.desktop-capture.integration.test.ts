@@ -21,6 +21,7 @@ import {
 import { join } from 'node:path';
 import process from 'node:process';
 import {
+  applyObsidianTheme,
   captureObsidianScreenshot,
   evalInObsidian,
   labelScreenshot,
@@ -64,6 +65,11 @@ beforeAll(async () => {
   });
   await vault.syncToDevice();
 
+  // Node-side and saved at once, not a bare `app.changeTheme`: a config reload
+  // landing before its debounced save drops the theme, and every frame comes out
+  // light. It also makes each capture refuse a frame that has left the theme.
+  await applyObsidianTheme({ theme: 'dark', vaultPath: vaultPath() });
+
   await evalInObsidian({
     async callback({ app, lib: { waitUntil }, newNoteFolder, sourceNotePath }) {
       /*
@@ -74,8 +80,6 @@ beforeAll(async () => {
        */
       const SETTLE_TIMEOUT_IN_MILLISECONDS = 20_000;
       const SETTLE_DELAY_IN_MILLISECONDS = 1000;
-
-      app.changeTheme('obsidian');
 
       await waitUntil({
         message: 'the staged notes to appear in the vault',

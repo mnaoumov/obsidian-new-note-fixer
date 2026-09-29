@@ -1,5 +1,35 @@
 # CHANGELOG
 
+## 2.3.0
+
+- test(screenshots): merge the applyObsidianTheme desktop capture
+- docs(screenshots): merge the caret-free desktop frame 1
+- build(deps): merge the obsidian-integration-testing 17 float
+- build(deps): merge the obsidian-test-mocks 7.0.0 float
+- fix(test): merge the headless demo-vault toolkit install
+- fix(deps): restore the lockfile's missing resolved and integrity fields
+- build(markdownlint): forbid hard-wrapped markdown paragraphs
+- test(integration): size the spellcheck closure against its helper's call count
+- fix(deps): float devalue to 5.9.4, clearing GHSA-9rgm-9g3h-6x36
+- chore(deps): drop the dead type-fest override
+- chore(deps): drop the dead markdown-it override
+- chore(deps): drop the dead js-yaml override
+- style(comments): stop capitalizing the middle of a wrapped comment
+- docs: replace the private rule-id citations with what they assert
+- docs: name the library and the sibling plugins so a reader can resolve them
+- docs: replace the private tracker references with what they pointed at
+- chore(deps): move to obsidian-dev-utils 103
+- test: bring the in-closure wait ceilings under the transport's per-eval cap
+- chore: adopt the npm run gate branch gate
+- docs: say where the debug command is run
+- test: bring the in-closure wait ceiling under the transport's per-eval cap
+- docs(agents): record where the picker's spellcheck rule now lives
+- feat(folder-picker): spell-check the box, which names the folder it will create
+- docs: name the unversioned demo-vault asset and the folder it unzips into
+- chore: make the LICENSE copyright line checkable by the linter and guard it against the year roll-over
+- fix(deps): move to obsidian-integration-testing 12 and obsidian-dev-utils 101
+- fix(build): wire build:compile to buildCompile and drop the duplicate leaf script
+
 ## 2.2.5
 
 - chore(deps): sweep caret-ranged dependencies to latest

@@ -5,14 +5,14 @@ import type {
   TFolder
 } from 'obsidian';
 
+import { applySpellcheckMode } from '@mnaoumov/obsidian-lib/html-element';
+import { SpellcheckMode } from '@mnaoumov/obsidian-lib/obsidian-settings';
+import { invokeAsyncSafely } from '@mnaoumov/typescript-lib/async';
 import {
   FuzzySuggestModal,
   prepareFuzzySearch,
   sortSearchResults
 } from 'obsidian';
-import { invokeAsyncSafely } from 'obsidian-dev-utils/async';
-import { applySpellcheckMode } from 'obsidian-dev-utils/obsidian/html-element';
-import { SpellcheckMode } from 'obsidian-dev-utils/obsidian/obsidian-settings';
 
 interface FolderSelectorModalConstructorParams {
   readonly app: App;

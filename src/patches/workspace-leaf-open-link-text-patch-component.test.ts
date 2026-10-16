@@ -1,17 +1,17 @@
+import type { PluginNoticeComponent } from '@mnaoumov/obsidian-lib/components/plugin-notice-component';
+import type { ConfirmParams } from '@mnaoumov/obsidian-lib/modals/confirm';
+import type { ResourceLockComponent } from '@mnaoumov/obsidian-lib/resource-lock';
 import type {
   App,
   OpenViewState,
   TFolder,
   WorkspaceLeaf as WorkspaceLeafType
 } from 'obsidian';
-import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
-import type { ConfirmParams } from 'obsidian-dev-utils/obsidian/modals/confirm';
-import type { ResourceLockComponent } from 'obsidian-dev-utils/obsidian/resource-lock';
 
+import { noop } from '@mnaoumov/typescript-lib/function';
+import { castTo } from '@mnaoumov/typescript-lib/object-utils';
+import { strictProxy } from '@mnaoumov/typescript-test-toolkit/strict-proxy';
 import { WorkspaceLeaf } from 'obsidian';
-import { noop } from 'obsidian-dev-utils/function';
-import { castTo } from 'obsidian-dev-utils/object-utils';
-import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
   afterEach,
   describe,
@@ -28,7 +28,7 @@ import { WorkspaceLeafOpenLinkTextPatchComponent } from './workspace-leaf-open-l
 
 /**
  * The component is driven through the REAL `MonkeyAroundComponent` from
- * `obsidian-dev-utils` (never mocked): `component.load()` really patches
+ * `@mnaoumov/obsidian-lib` (never mocked): `component.load()` really patches
  * `WorkspaceLeaf.prototype.openLinkText`, and the test asserts by invoking the
  * really-patched method. `WorkspaceLeaf.openLinkText` is an Obsidian-internal
  * member the `obsidian-test-mocks` shell does not model, so we supplement it
@@ -58,13 +58,13 @@ vi.mock('obsidian', async (importOriginal) => ({
   ...await importOriginal<typeof import('obsidian')>()
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/link', async (importOriginal) => ({
-  ...await importOriginal<typeof import('obsidian-dev-utils/obsidian/link')>(),
+vi.mock('@mnaoumov/obsidian-lib/link', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@mnaoumov/obsidian-lib/link')>(),
   editLinks: hoisted.mockEditLinks,
   generateMarkdownLink: hoisted.mockGenerateMarkdownLink
 }));
 
-vi.mock('obsidian-dev-utils/obsidian/modals/confirm', () => ({
+vi.mock('@mnaoumov/obsidian-lib/modals/confirm', () => ({
   confirm: hoisted.mockConfirm
 }));
 

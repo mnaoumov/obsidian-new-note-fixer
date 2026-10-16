@@ -5,6 +5,7 @@ import type {
   WorkspaceLeaf as WorkspaceLeafType
 } from 'obsidian';
 import type { PluginNoticeComponent } from 'obsidian-dev-utils/obsidian/components/plugin-notice-component';
+import type { ConfirmParams } from 'obsidian-dev-utils/obsidian/modals/confirm';
 import type { ResourceLockComponent } from 'obsidian-dev-utils/obsidian/resource-lock';
 
 import { WorkspaceLeaf } from 'obsidian';
@@ -46,7 +47,7 @@ import { WorkspaceLeafOpenLinkTextPatchComponent } from './workspace-leaf-open-l
  */
 
 const hoisted = vi.hoisted(() => ({
-  mockConfirm: vi.fn(),
+  mockConfirm: vi.fn<(params: ConfirmParams) => Promise<boolean>>(),
   mockEditLinks: vi.fn(),
   mockGenerateMarkdownLink: vi.fn(),
   mockSelectFolder: vi.fn(),
@@ -190,6 +191,8 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
     await openLinkText('test', 'projects/source.md');
 
     expect(hoisted.mockConfirm).toHaveBeenCalled();
+    const title = castTo<DocumentFragment>(hoisted.mockConfirm.mock.calls[0]?.[0].title);
+    expect(title.querySelector('code')?.textContent).toBe('New Note Fixer');
     expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'projects');
     expect(next).toHaveBeenCalledWith('/selected/test', 'projects/source.md', undefined);
   });

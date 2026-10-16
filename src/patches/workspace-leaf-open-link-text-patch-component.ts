@@ -7,6 +7,7 @@ import {
   WorkspaceLeaf
 } from 'obsidian';
 import { MonkeyAroundComponent } from 'obsidian-dev-utils/obsidian/components/monkey-around-component';
+import { appendCodeBlock } from 'obsidian-dev-utils/obsidian/html-element';
 import {
   editLinks,
   generateMarkdownLink
@@ -95,7 +96,9 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
             const shouldUseCurrentNoteFolder = await confirm({
               app: this.app,
               message: `Create the new note in the current note’s folder (${currentNoteFolder})?`,
-              title: 'New Note Fixer'
+              title: createFragment((f) => {
+                appendCodeBlock(f, 'New Note Fixer');
+              })
             });
             if (shouldUseCurrentNoteFolder) {
               directory = currentNoteFolder;

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.3.1
+
+- build: move off obsidian-dev-utils onto the @mnaoumov packages
+- fix: mark plugin names as code in the confirm title, markdown and comments
+- test: merge using the obsidian-typings declarations of Obsidian internals
+
 ## 2.3.0
 
 - test(screenshots): merge the applyObsidianTheme desktop capture

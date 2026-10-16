@@ -4,9 +4,9 @@ import type {
   TFolder
 } from 'obsidian';
 
+import { castTo } from '@mnaoumov/typescript-lib/object-utils';
+import { strictProxy } from '@mnaoumov/typescript-test-toolkit/strict-proxy';
 import { FuzzySuggestModal } from 'obsidian';
-import { castTo } from 'obsidian-dev-utils/object-utils';
-import { strictProxy } from 'obsidian-dev-utils/strict-proxy';
 import {
   afterEach,
   beforeEach,
@@ -73,8 +73,8 @@ vi.mock('obsidian', async (importOriginal) => ({
   sortSearchResults: (...$arguments: unknown[]): void => mockSortSearchResults(...$arguments)
 }));
 
-vi.mock('obsidian-dev-utils/async', async (importOriginal) => ({
-  ...await importOriginal<typeof import('obsidian-dev-utils/async')>(),
+vi.mock('@mnaoumov/typescript-lib/async', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@mnaoumov/typescript-lib/async')>(),
   /*
    * Sanctioned borderline exception: stub the fire-and-forget helper so the async
    * create-folder flow becomes awaitable / synchronously drivable in tests.

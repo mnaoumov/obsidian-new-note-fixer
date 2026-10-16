@@ -35,14 +35,6 @@ import {
   it
 } from 'vitest';
 
-/**
- * App, reduced to the font-size applier that obsidian-typings does not declare.
- * Setting baseFontSize alone changes nothing on screen.
- */
-interface FontSizeApp {
-  updateFontSize: (this: void) => void;
-}
-
 const PLUGIN_ID = 'new-note-fixer';
 const WIDTH_IN_PIXELS = 900;
 const HEIGHT_IN_PIXELS = 1600;
@@ -99,8 +91,7 @@ beforeAll(async () => {
       app.vault.setConfig('newFileFolderPath', newNoteFolder);
 
       app.vault.setConfig('baseFontSize', fontSizeInPixels);
-      const fontApp: unknown = app;
-      (fontApp as FontSizeApp).updateFontSize();
+      app.updateFontSize();
 
       await sleep(SETTLE_DELAY_IN_MILLISECONDS);
     },

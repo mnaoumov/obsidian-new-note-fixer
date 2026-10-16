@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * Integration suite that exercises New Note Fixer's headline user-facing feature end-to-end
+ * Integration suite that exercises `New Note Fixer`'s headline user-facing feature end-to-end
  * against a real Obsidian: following a link to a non-existing note creates the note and (in the
  * "Ask for current note folder first" mode added for issue #5) lets the user place it in the current
  * note's folder via a confirm dialog that pre-fills the folder picker.

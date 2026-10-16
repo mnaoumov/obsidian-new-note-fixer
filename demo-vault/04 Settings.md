@@ -35,6 +35,6 @@ Manual equivalent for all three: pick the mode from the **New note location** dr
   - `Prompt for folder`
     - a folder picker opens so you choose where the new note is created. The picker also lets you type a new folder name to create it on the spot.
   - `Ask for current note folder first`
-    - New Note Fixer first asks whether to create the note in the current note's folder. Confirming opens the folder picker pre-filled with the current note's folder; declining opens it pre-filled with the default location. Either way you can still adjust the folder before creating.
+    - `New Note Fixer` first asks whether to create the note in the current note's folder. Confirming opens the folder picker pre-filled with the current note's folder; declining opens it pre-filled with the default location. Either way you can still adjust the folder before creating.
 
 Upgrading from an older version keeps your previous choice: the old `shouldPromptForFolderLocation` toggle maps to `Prompt for folder` when it was on and `Default location` when it was off.

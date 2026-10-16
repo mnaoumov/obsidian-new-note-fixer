@@ -91,7 +91,7 @@
 
 - docs: standardize demo-vault README
 - docs: drop per-plugin demo-vault setup notes (bootstrap covered by the obsidian-dev-utils harness)
-- docs(demo-vault): create the New Note Fixer demo vault
+- docs(demo-vault): create the `New Note Fixer` demo vault
 - chore: update libs
 - chore: update libs
 - docs: migrate to AGENTS.md

@@ -1,6 +1,6 @@
 # Subfolder link fix
 
-When you click a link to a non-existing note, Obsidian creates the note for you. A bare `[[link]]` respects **Settings -> Files and links -> Default location for new notes**, but a **folder-qualified** link like `[[folder/note]]` ignores that setting and always creates the note at `<vault root>/folder/note.md`. New Note Fixer makes the folder-qualified case respect the same **Default location for new notes** setting, so note creation is consistent no matter how you wrote the link.
+When you click a link to a non-existing note, Obsidian creates the note for you. A bare `[[link]]` respects **Settings -> Files and links -> Default location for new notes**, but a **folder-qualified** link like `[[folder/note]]` ignores that setting and always creates the note at `<vault root>/folder/note.md`. `New Note Fixer` makes the folder-qualified case respect the same **Default location for new notes** setting, so note creation is consistent no matter how you wrote the link.
 
 ## Try it
 
@@ -20,7 +20,7 @@ Manual equivalent: create a folder named `Inbox`, then set **Settings -> Files a
 Then:
 
 1. Come back to this note and click this link to a note that does not exist yet: [[Projects/Fresh idea]].
-2. New Note Fixer creates and opens the note under your default location - `Inbox/Projects/Fresh idea.md` - instead of the vault-root `Projects/Fresh idea.md` that plain Obsidian would make.
+2. `New Note Fixer` creates and opens the note under your default location - `Inbox/Projects/Fresh idea.md` - instead of the vault-root `Projects/Fresh idea.md` that plain Obsidian would make.
 3. The link in this note is rewritten to point at the note that was actually created, so it keeps working.
 
 <!-- obsidian-dev-utils-enable demo-vault-validation/no-wikilinks -->

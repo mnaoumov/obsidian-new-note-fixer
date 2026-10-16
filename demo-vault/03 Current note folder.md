@@ -1,6 +1,6 @@
 # Current note folder
 
-By default New Note Fixer places a new note under your **Default location for new notes** setting. Often, though, you want the new note to live right next to the note you are writing in. The **Ask for current note folder first** mode makes that a one-click choice: whenever you follow a link to a non-existing note, New Note Fixer first asks whether to create it in the current note's folder.
+By default `New Note Fixer` places a new note under your **Default location for new notes** setting. Often, though, you want the new note to live right next to the note you are writing in. The **Ask for current note folder first** mode makes that a one-click choice: whenever you follow a link to a non-existing note, `New Note Fixer` first asks whether to create it in the current note's folder.
 
 ## Try it
 
@@ -45,6 +45,6 @@ Manual equivalent: set **New note location** back to **Default location**.
 - **Still your choice**
   - the confirm only *pre-fills* the picker; you can always override the folder before creating.
 - **Falls back cleanly**
-  - if there is no open source note, New Note Fixer skips the question and behaves like **Prompt for folder**.
+  - if there is no open source note, `New Note Fixer` skips the question and behaves like **Prompt for folder**.
 
 The other placement modes - **Default location** and **Prompt for folder** - are described in [04 Settings](<./04 Settings.md>). See also [01 Subfolder link fix](<./01 Subfolder link fix.md>) and [02 Relative link fix](<./02 Relative link fix.md>).

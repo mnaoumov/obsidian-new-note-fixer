@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-New Note Fixer is an Obsidian plugin that unifies the way non-existing notes are created when clicking on their links. It patches `WorkspaceLeaf.openLinkText` so that following a link to a missing note resolves the target path consistently (optionally prompting for the destination folder) and rewrites the source link to the created file. It is built on `obsidian-dev-utils`.
+`New Note Fixer` is an Obsidian plugin that unifies the way non-existing notes are created when clicking on their links. It patches `WorkspaceLeaf.openLinkText` so that following a link to a missing note resolves the target path consistently (optionally prompting for the destination folder) and rewrites the source link to the created file. It is built on `obsidian-dev-utils`.
 
 ## Commands
 

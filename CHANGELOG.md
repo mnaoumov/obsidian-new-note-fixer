@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2.4.0
+
+- docs(demo-vault): give the relative link fix Try it its setup and step buttons
+- chore(github): point questions to Discussions from the new-issue page
+- feat: merge resolving ./ and ../ new-note links from the linking note's folder
+- ci: merge attesting release assets through the toolkit's reusable workflow
+
 ## 2.3.1
 
 - build: move off obsidian-dev-utils onto the @mnaoumov packages

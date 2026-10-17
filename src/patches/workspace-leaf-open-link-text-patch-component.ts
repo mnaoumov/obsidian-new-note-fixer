@@ -61,9 +61,14 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
           return;
         }
 
+        // A link starting with `./` or `../` names its folder relative to the linking note, the way Obsidian resolves an existing target.
+        const isRelativeToSourceNote = sourcePath !== '' && isExplicitlyRelativePath(path);
+
         let fullPath: string;
         if (path.startsWith('/')) {
           fullPath = path;
+        } else if (isRelativeToSourceNote) {
+          fullPath = join(dirname(sourcePath), path);
         } else {
           const newFileParent = this.app.fileManager.getNewFileParent(sourcePath, 'dummy.md');
           fullPath = join(newFileParent.path, `./${path}`);
@@ -88,7 +93,8 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
             directory = '/';
           }
 
-          if (mode === NewNoteLocationMode.AskForCurrentNoteFolderFirst && sourcePath) {
+          // A relative link already anchors at the current note's folder, so asking would only drop its subfolder.
+          if (mode === NewNoteLocationMode.AskForCurrentNoteFolderFirst && sourcePath && !isRelativeToSourceNote) {
             let currentNoteFolder = dirname(sourcePath);
             if (currentNoteFolder === '.') {
               currentNoteFolder = '/';
@@ -138,4 +144,8 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
       }
     });
   }
+}
+
+function isExplicitlyRelativePath(path: string): boolean {
+  return path.startsWith('./') || path.startsWith('../');
 }

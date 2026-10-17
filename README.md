@@ -8,7 +8,7 @@ Clicking a link to a note that does not exist yet creates it — and where it la
 - `[[folder/non-existing-note]]` ignores that setting entirely and creates the note at the **vault root**, under `folder/`.
 - `[[../folder/non-existing-note]]` creates a file **outside the vault**, does not open it, and on the second click reports the misleading error `Folder already exists`.
 
-This plugin makes all three obey the setting you configured, so where a new note appears no longer depends on how the link that created it happened to be written.
+This plugin makes the first two obey the setting you configured, so where a new note appears no longer depends on how the link that created it happened to be written. A link that starts with `./` or `../` names its folder relative to the note it is in, so the plugin creates the note there — the same place Obsidian would look for it once it exists — and refuses one that would leave the vault.
 
 <!-- markdownlint-disable MD033 -->
 
@@ -42,7 +42,7 @@ A copy of the vault ships with every release. You can access it via any of the f
 ## What it does
 
 - **A link with a folder in it** stops ignoring your default-location setting. [01 Subfolder link fix](<./demo-vault/01 Subfolder link fix.md>)
-- **A link that climbs out of the vault** (`../`) stops creating files outside it, and stops the `Folder already exists` message that follows. [02 Relative link fix](<./demo-vault/02 Relative link fix.md>)
+- **A relative link** (`./` or `../`) creates the note relative to the linking note's folder, creating any missing folder on the way. One that climbs out of the vault stops creating files outside it, and stops the `Folder already exists` message that follows. [02 Relative link fix](<./demo-vault/02 Relative link fix.md>)
 - **`Same folder as current file`** keeps working the way you would expect for every link shape. [03 Current note folder](<./demo-vault/03 Current note folder.md>)
 - **Every setting**, by the key it is stored under. [04 Settings](<./demo-vault/04 Settings.md>)
 

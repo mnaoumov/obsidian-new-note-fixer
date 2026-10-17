@@ -142,6 +142,49 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
     expect(next).toHaveBeenCalledWith('/notes/test', 'source.md', undefined);
   });
 
+  it('should resolve a ./ path against the source note folder, not the new file parent', async () => {
+    const { next, openLinkText } = createComponent();
+
+    await openLinkText('./Assets/Note.md', 'Notes/Project/Project.md');
+
+    expect(next).toHaveBeenCalledWith('/Notes/Project/Assets/Note.md', 'Notes/Project/Project.md', undefined);
+  });
+
+  it('should resolve a ../ path against the source note folder', async () => {
+    const { next, openLinkText } = createComponent();
+
+    await openLinkText('../Shared/Note', 'Notes/Project/Project.md');
+
+    expect(next).toHaveBeenCalledWith('/Notes/Shared/Note', 'Notes/Project/Project.md', undefined);
+  });
+
+  it('should resolve a ./ path against the vault root for a source note at the root', async () => {
+    const { next, openLinkText } = createComponent();
+
+    await openLinkText('./Assets/Note', 'source.md');
+
+    expect(next).toHaveBeenCalledWith('/Assets/Note', 'source.md', undefined);
+  });
+
+  it('should resolve a ./ path against the new file parent when there is no source note', async () => {
+    const { next, openLinkText } = createComponent();
+
+    await openLinkText('./test', '');
+
+    expect(next).toHaveBeenCalledWith('/notes/test', '', undefined);
+  });
+
+  it('should seed the picker with the source-relative folder and skip the confirm for a ./ path in AskForCurrentNoteFolderFirst mode', async () => {
+    const { next, openLinkText } = createComponent({ newNoteLocationMode: NewNoteLocationMode.AskForCurrentNoteFolderFirst });
+    hoisted.mockSelectFolder.mockResolvedValue(strictProxy<TFolder>({ path: 'selected' }));
+
+    await openLinkText('./Assets/Note', 'Notes/Project/Project.md');
+
+    expect(hoisted.mockConfirm).not.toHaveBeenCalled();
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'Notes/Project/Assets');
+    expect(next).toHaveBeenCalledWith('/selected/Note', 'Notes/Project/Project.md', undefined);
+  });
+
   it('should show an error for a wrong relative path starting with ../', async () => {
     const { next, openLinkText } = createComponent({ newFileParentPath: '.' });
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(noop);

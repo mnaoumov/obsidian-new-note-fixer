@@ -12,8 +12,17 @@ A link like `[[../folder/note]]` points *above* the folder of the current note. 
 
 <!-- obsidian-dev-utils-enable demo-vault-validation/no-wikilinks -->
 
+## Inside the vault
+
+A relative link that stays inside the vault is resolved from the folder of the note that holds it, the same way Obsidian resolves it once the target exists. In `Notes/Project/Project.md`:
+
+- `[Note](./Assets/Note.md)` creates `Notes/Project/Assets/Note.md`, creating `Assets` if it does not exist yet.
+- `[[../Shared/Note]]` creates `Notes/Shared/Note.md`.
+
+Only a link without `./` or `../` follows your **Default location for new notes** setting.
+
 ## Prefer to pick a folder?
 
-If you set **New note location** to **Prompt for folder** or **Ask for current note folder first** (see [04 Settings](<./04 Settings.md>)), a relative link no longer errors out - instead you get a folder picker so you can send the new note wherever you like, keeping it inside the vault. With the default **Default location** mode, the safe default is to refuse the out-of-vault path.
+If you set **New note location** to **Prompt for folder** or **Ask for current note folder first** (see [04 Settings](<./04 Settings.md>)), a relative link no longer errors out - instead you get a folder picker, pre-filled with the folder the link names, so you can send the new note wherever you like, keeping it inside the vault. **Ask for current note folder first** skips its question for a relative link, which already names a folder relative to the current note. With the default **Default location** mode, the safe default is to refuse the out-of-vault path.
 
 For the everyday folder-qualified case, see [01 Subfolder link fix](<./01 Subfolder link fix.md>).

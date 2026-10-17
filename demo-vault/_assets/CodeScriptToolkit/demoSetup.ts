@@ -39,6 +39,19 @@ export function restoreDefaultLocation(app: App): void {
 }
 
 /**
+ * Follows a link from the open note, exactly as clicking it in that note would.
+ *
+ * `WorkspaceLeaf.openLinkText` is the method the plugin patches, so this goes through the same path a
+ * click does.
+ *
+ * Manual equivalent: click the link in the note.
+ */
+export async function followLinkFromActiveNote(app: App, linkText: string): Promise<void> {
+  const sourcePath = app.workspace.getActiveFile()?.path ?? '';
+  await app.workspace.getLeaf().openLinkText(linkText, sourcePath);
+}
+
+/**
  * Switches the plugin's placement mode.
  *
  * Applied live through the plugin's own settings component, so there is no reload.

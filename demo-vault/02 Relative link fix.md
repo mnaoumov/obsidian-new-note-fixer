@@ -4,7 +4,29 @@ A link like `[[../folder/note]]` points *above* the folder of the current note. 
 
 ## Try it
 
+The refusal belongs to the default **Default location** mode, so make sure that mode is on:
+
+```code-button
+---
+caption: Use the Default location mode
+---
+await require('/demoSetup.ts').setNoteLocationMode(app, 'Default location');
+```
+
+Manual equivalent: set **New note location** to **Default location** in [04 Settings](<./04 Settings.md>). It is the default, so there is nothing to put back afterwards.
+
 <!-- obsidian-dev-utils-disable demo-vault-validation/no-wikilinks -- The reader has to click an out-of-vault link that resolves to nothing, which only a wikilink can express here. -->
+
+Then follow the link. This button follows it from this note through the same path a click takes:
+
+```code-button
+---
+caption: Follow the out-of-vault link
+---
+await require('/demoSetup.ts').followLinkFromActiveNote(app, '../Outside vault/Stray note');
+```
+
+Manual equivalent: click the link in step 1.
 
 1. Click this link, which points above the vault root: [[../Outside vault/Stray note]].
 2. Instead of silently creating a broken file outside your vault, `New Note Fixer` shows the notice `Wrong relative path: ../Outside vault/Stray note` and creates nothing.

@@ -1,6 +1,6 @@
 # Settings
 
-Open **Settings -> Community plugins -> New Note Fixer** to configure the plugin. The option below lists the setting key stored in the plugin's `data.json`.
+Open **Settings -> Community plugins -> `New Note Fixer`** to configure the plugin. The option below lists the setting key stored in the plugin's `data.json`.
 
 Each mode has a button, so you can try one and come straight back. They apply live - the plugin's own settings component saves them, so there is no reload:
 

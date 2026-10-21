@@ -62,7 +62,9 @@ To install the latest beta release of this plugin (regardless if it is available
 
 By default, debug messages for this plugin are hidden.
 
-To show them, run the following command in the `DevTools Console`:
+To show them, install [`Advanced Debug Mode`](https://community.obsidian.md/plugins/advanced-debug-mode), run **`Advanced Debug Mode`: Open plugin debug messages** and tick `New Note Fixer`. To flip only this plugin, run **`Advanced Debug Mode`: Toggle debug messages for a plugin...** and pick `New Note Fixer`.
+
+Without `Advanced Debug Mode`, run the following command in the `DevTools Console`:
 
 ```js
 window.DEBUG.enable('new-note-fixer');

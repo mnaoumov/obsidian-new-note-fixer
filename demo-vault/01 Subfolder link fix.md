@@ -4,7 +4,7 @@ When you click a link to a non-existing note, Obsidian creates the note for you.
 
 ## Try it
 
-<!-- obsidian-dev-utils-disable demo-vault-validation/no-wikilinks -- Clicking a link to a note that does not exist yet IS the feature, and a Markdown link to a missing note fails lint:md. -->
+<!-- obsidian-dev-toolkit-disable demo-vault-validation/no-wikilinks -- Clicking a link to a note that does not exist yet IS the feature, and a Markdown link to a missing note fails lint:md. -->
 
 First, point Obsidian's default location somewhere obvious, so the difference is visible:
 
@@ -23,7 +23,7 @@ Then:
 2. `New Note Fixer` creates and opens the note under your default location - `Inbox/Projects/Fresh idea.md` - instead of the vault-root `Projects/Fresh idea.md` that plain Obsidian would make.
 3. The link in this note is rewritten to point at the note that was actually created, so it keeps working.
 
-<!-- obsidian-dev-utils-enable demo-vault-validation/no-wikilinks -->
+<!-- obsidian-dev-toolkit-enable demo-vault-validation/no-wikilinks -->
 
 When you have seen it, put Obsidian's setting back:
 

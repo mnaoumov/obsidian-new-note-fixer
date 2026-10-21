@@ -4,7 +4,7 @@
 
 - docs(demo-vault): give the relative link fix Try it its setup and step buttons
 - chore(github): point questions to Discussions from the new-issue page
-- feat: merge resolving ./ and ../ new-note links from the linking note's folder
+- feat: merge resolving ./ and ../ new-note links from the linking note's folder (re #2 - [FR] Support relative paths)
 - ci: merge attesting release assets through the toolkit's reusable workflow
 
 ## 2.3.1

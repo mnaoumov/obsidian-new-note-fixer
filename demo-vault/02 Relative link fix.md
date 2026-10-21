@@ -15,7 +15,7 @@ await require('/demoSetup.ts').setNoteLocationMode(app, 'Default location');
 
 Manual equivalent: set **New note location** to **Default location** in [04 Settings](<./04 Settings.md>). It is the default, so there is nothing to put back afterwards.
 
-<!-- obsidian-dev-utils-disable demo-vault-validation/no-wikilinks -- The reader has to click an out-of-vault link that resolves to nothing, which only a wikilink can express here. -->
+<!-- obsidian-dev-toolkit-disable demo-vault-validation/no-wikilinks -- The reader has to click an out-of-vault link that resolves to nothing, which only a wikilink can express here. -->
 
 Then follow the link. This button follows it from this note through the same path a click takes:
 
@@ -32,7 +32,7 @@ Manual equivalent: click the link in step 1.
 2. Instead of silently creating a broken file outside your vault, `New Note Fixer` shows the notice `Wrong relative path: ../Outside vault/Stray note` and creates nothing.
 3. No stray file, and no confusing `Folder already exists` error on a second click.
 
-<!-- obsidian-dev-utils-enable demo-vault-validation/no-wikilinks -->
+<!-- obsidian-dev-toolkit-enable demo-vault-validation/no-wikilinks -->
 
 ## Inside the vault
 

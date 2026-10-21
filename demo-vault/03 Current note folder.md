@@ -4,7 +4,7 @@ By default `New Note Fixer` places a new note under your **Default location for 
 
 ## Try it
 
-<!-- obsidian-dev-utils-disable demo-vault-validation/no-wikilinks -- Clicking a link to a note that does not exist yet IS the feature, and a Markdown link to a missing note fails lint:md. -->
+<!-- obsidian-dev-toolkit-disable demo-vault-validation/no-wikilinks -- Clicking a link to a note that does not exist yet IS the feature, and a Markdown link to a missing note fails lint:md. -->
 
 First, switch the mode:
 
@@ -25,7 +25,7 @@ Then:
    - Click **Cancel** to open the folder picker pre-filled with your default location instead.
 3. The new note is created in the folder you accepted, and the clicked link is repaired to point at it.
 
-<!-- obsidian-dev-utils-enable demo-vault-validation/no-wikilinks -->
+<!-- obsidian-dev-toolkit-enable demo-vault-validation/no-wikilinks -->
 
 Put the mode back when you are done:
 

@@ -34,10 +34,10 @@ import { WorkspaceLeafOpenLinkTextPatchComponent } from './workspace-leaf-open-l
  * member the `obsidian-test-mocks` shell does not model, so we supplement it
  * with a `vi.fn()` that doubles as the original method (the `next` handler the
  * patch wraps) — a sanctioned return-value/behavior supplement, not a
- * re-implementation of any dev-utils / test-mocks logic.
+ * re-implementation of any obsidian-lib / test-mocks logic.
  *
- * Only the plugin's OWN sibling module (`folder-selector`), the dev-utils
- * `link` utilities (`editLinks` / `generateMarkdownLink`), and the dev-utils
+ * Only the plugin's OWN sibling module (`folder-selector`), the obsidian-lib
+ * `link` utilities (`editLinks` / `generateMarkdownLink`), and the obsidian-lib
  * `confirm` modal are stubbed for their return values — driving those for real
  * would require a full vault with file contents or live user interaction with a
  * modal. `confirm` is an interactive UI helper, so it is supplemented for its

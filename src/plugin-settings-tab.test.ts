@@ -67,7 +67,7 @@ describe('PluginSettingsTab', () => {
   beforeEach(() => {
     /*
      * The real `bind` duck-types the value component via a strict-proxy probe (`setPlaceholderValue`),
-     * which throws on the non-text toggle. `bind` is exercised by dev-utils' own tests, so stubbing its
+     * which throws on the non-text toggle. `bind` is exercised by obsidian-lib's own tests, so stubbing its
      * return value (a passthrough) is an allowed double, not a re-implementation.
      */
     vi.spyOn(PluginSettingsTabBase.prototype, 'bind').mockImplementation((params) => params.valueComponent);

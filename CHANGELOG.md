@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2.4.1
+
+- test(demo-vault): floor `CodeScript Toolkit` at 15.0.0
+- chore(deps): take obsidian-lib 6 and obsidian-dev-toolkit 5
+- docs: name obsidian-lib where comments said dev-utils
+- chore(deps): move to obsidian-dev-toolkit 4 and its demo-vault directive spelling
+- docs: shorten the debugging section
+- docs(changelog): escape the issue-title tags so markdownlint and cspell pass
+- docs(changelog): name the issue each released entry resolved
+- fix(demo-vault): load the demo setup helpers from @mnaoumov/obsidian-lib
+- docs(readme): lead the Debugging section with `Advanced Debug Mode`
+- build(deps): float brace-expansion, sharp and fast-uri past their advisories
+- docs: mark plugin names as code
+
 ## 2.4.0
 
 - docs(demo-vault): give the relative link fix Try it its setup and step buttons

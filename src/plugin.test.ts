@@ -31,14 +31,15 @@ import { Plugin } from './plugin.ts';
  */
 
 interface AppOriginal {
-  asOriginalType__: () => AppType;
+  readonly asOriginalType__: () => AppType;
 }
 
 interface AppStatics {
-  createConfigured__: () => AppOriginal;
+  readonly createConfigured__: () => AppOriginal;
 }
 
 interface PatchedPrototype {
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests install and remove the prototype patch between cases.
   openLinkText?: WorkspaceLeaf['openLinkText'];
 }
 

@@ -90,13 +90,14 @@ interface EditLinksMockParams {
 }
 
 interface LinkInfo {
-  link: string;
-  original: string;
+  readonly link: string;
+  readonly original: string;
 }
 
 type OpenLinkTextFunction = WorkspaceLeafType['openLinkText'];
 
 interface PatchedPrototype {
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests install and remove the prototype patch between cases.
   openLinkText: OpenLinkTextFunction;
 }
 

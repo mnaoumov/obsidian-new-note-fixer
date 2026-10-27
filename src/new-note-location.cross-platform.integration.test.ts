@@ -41,16 +41,17 @@ const EXPECTED_CREATED_PATH = `${SOURCE_FOLDER}/${LINK_TEXT}.md`;
 const WAIT_TIMEOUT_IN_MILLISECONDS = 6000;
 
 interface ComponentNode {
-  _children?: ComponentNode[];
-  editAndSave?: (settingsEditor: (settings: EditableSettings) => void) => Promise<void>;
+  readonly _children?: ComponentNode[];
+  readonly editAndSave?: (settingsEditor: (settings: EditableSettings) => void) => Promise<void>;
 }
 
 interface EditableSettings {
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests change the live setting to exercise each location mode.
   newNoteLocationMode: string;
 }
 
 interface SettingsHost {
-  editAndSave: (settingsEditor: (settings: EditableSettings) => void) => Promise<void>;
+  readonly editAndSave: (settingsEditor: (settings: EditableSettings) => void) => Promise<void>;
 }
 describe('New note location - ask for current note folder first', () => {
   it('creates the new note in the current note folder when the confirm is accepted', async () => {

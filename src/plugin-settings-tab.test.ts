@@ -28,7 +28,7 @@ import { PluginSettingsTab } from './plugin-settings-tab.ts';
 import { NewNoteLocationMode } from './plugin-settings.ts';
 
 interface AppStatics {
-  createConfigured__: () => App;
+  readonly createConfigured__: () => App;
 }
 
 function createTab(): PluginSettingsTab {

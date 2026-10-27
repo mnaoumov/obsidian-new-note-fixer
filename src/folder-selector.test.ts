@@ -40,7 +40,7 @@ const mockFolders: TFolder[] = [
 ];
 
 interface ChooserStub {
-  setSuggestions: ReturnType<typeof vi.fn>;
+  readonly setSuggestions: ReturnType<typeof vi.fn>;
 }
 
 interface CreateModalResult {
@@ -49,19 +49,23 @@ interface CreateModalResult {
 }
 
 interface FolderSelectorModalTestable {
-  app: App;
+  readonly app: App;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests replace this prototype stub before each case.
   chooser: ChooserStub;
-  getItems: () => TFolder[];
-  getItemText: (item: null | TFolder) => string;
+  readonly getItems: () => TFolder[];
+  readonly getItemText: (item: null | TFolder) => string;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests replace this prototype stub before each case.
   getSuggestions: (query: string) => FuzzyMatch<null | TFolder>[];
-  inputEl: HTMLInputElement;
-  onChooseItem: (item: null | TFolder) => void;
-  onClose: () => void;
-  onNoSuggestion: () => void;
-  onOpen: () => void;
+  readonly inputEl: HTMLInputElement;
+  readonly onChooseItem: (item: null | TFolder) => void;
+  readonly onClose: () => void;
+  readonly onNoSuggestion: () => void;
+  readonly onOpen: () => void;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests replace this prototype stub before each case.
   renderSuggestion: (item: FuzzyMatch<null | TFolder>, el: HTMLElement) => void;
-  selectSuggestion: (value: FuzzyMatch<null | TFolder>, $event: KeyboardEvent | MouseEvent) => void;
-  setPlaceholder: (placeholder: string) => void;
+  readonly selectSuggestion: (value: FuzzyMatch<null | TFolder>, $event: KeyboardEvent | MouseEvent) => void;
+  readonly setPlaceholder: (placeholder: string) => void;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests replace this prototype stub before each case.
   updateSuggestions: ReturnType<typeof vi.fn>;
 }
 

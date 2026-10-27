@@ -46,13 +46,17 @@ A copy of the vault ships with every release. You can access it via any of the f
 - **`Same folder as current file`** keeps working the way you would expect for every link shape. [03 Current note folder](<./demo-vault/03 Current note folder.md>)
 - **Every setting**, by the key it is stored under. [04 Settings](<./demo-vault/04 Settings.md>)
 
-## Similar plugins
+## See also
 
-- [`Create In Chosen Folder`](https://community.obsidian.md/plugins/create-in-chosen-folder) — asks for a folder every time you click a link to a note that does not exist yet, with the folders of recently created notes at the top; it keeps only the note's name, so a folder or relative path in the link is dropped, and the link is left as written. This plugin can also follow your default location without asking, and rewrites the link to the note it created.
-- [`Link Forge`](https://community.obsidian.md/plugins/link-forge) — creates the target of an unresolved wikilink, with any missing folders, as soon as you leave the line you typed it on, and shortens the link when the name is unique; it acts while you type rather than when you click a link.
-- [`Note Auto Creator`](https://community.obsidian.md/plugins/obsidian-note-autocreator) — creates the note when you insert a link from its own suggester, triggered by `@`, optionally from a template; a link written any other way is left to Obsidian.
-- [`Missing Link File Creator`](https://community.obsidian.md/plugins/missing-link-file-creator) — creates the missing targets of every link in the current note or a folder by command, placing them by its own folder and template rules; it does not change what a click on one link does.
-- [`Note Batcher`](https://community.obsidian.md/plugins/note-batcher) — creates all unresolved links in one click, through the `Dataview` API; it is a bulk command rather than a change to what a click on one link does.
+[My other Obsidian resources](https://github.com/mnaoumov/obsidian-resources)
+
+| Plugin | Features | How `New Note Fixer` differs |
+| --- | --- | --- |
+| [`Create In Chosen Folder`](https://community.obsidian.md/plugins/create-in-chosen-folder) | Folder prompt on missing-link click; recent folders; drops written folder paths | Same creation trigger; optional default destination; honors paths and rewrites the resulting link |
+| [`Link Forge`](https://community.obsidian.md/plugins/link-forge) | Creates unresolved wikilink targets/folders when leaving a line; shortens unique links | Different trigger: follows a clicked missing link |
+| [`Missing Link File Creator`](https://community.obsidian.md/plugins/missing-link-file-creator) | Command creates missing targets in a note/folder; folder/template rules | Different trigger: one clicked link rather than a bulk command |
+| [`Note Auto Creator`](https://community.obsidian.md/plugins/obsidian-note-autocreator) | Own @-triggered suggester; optional template; creates its chosen targets | Broader link origins: handles clicks on existing unresolved links |
+| [`Note Batcher`](https://community.obsidian.md/plugins/note-batcher) | One-click creation of unresolved links through `Dataview` | Different trigger: one clicked link rather than a bulk command |
 
 Last searched for similar plugins on 2026-10-26.
 
@@ -89,10 +93,6 @@ Contributions are welcome — see [CONTRIBUTING](./CONTRIBUTING.md) to get set u
 <a href="https://www.buymeacoffee.com/mnaoumov" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60" width="217"></a>
 
 <!-- markdownlint-enable MD033 -->
-
-## My other Obsidian resources
-
-[See my other Obsidian resources](https://github.com/mnaoumov/obsidian-resources).
 
 ## License
 

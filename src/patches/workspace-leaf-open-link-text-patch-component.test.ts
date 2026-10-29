@@ -37,7 +37,7 @@ import { WorkspaceLeafOpenLinkTextPatchComponent } from './workspace-leaf-open-l
  * re-implementation of any obsidian-lib / test-mocks logic.
  *
  * Only the plugin's OWN sibling module (`folder-selector`), the obsidian-lib
- * `link` utilities (`editLinks` / `generateMarkdownLink`), and the obsidian-lib
+ * `link` utilities (`editReferences` / `generateMarkdownLink`), and the obsidian-lib
  * `confirm` modal are stubbed for their return values — driving those for real
  * would require a full vault with file contents or live user interaction with a
  * modal. `confirm` is an interactive UI helper, so it is supplemented for its
@@ -60,7 +60,7 @@ vi.mock('obsidian', async (importOriginal) => ({
 
 vi.mock('@mnaoumov/obsidian-lib/link', async (importOriginal) => ({
   ...await importOriginal<typeof import('@mnaoumov/obsidian-lib/link')>(),
-  editLinks: hoisted.mockEditLinks,
+  editReferences: hoisted.mockEditLinks,
   generateMarkdownLink: hoisted.mockGenerateMarkdownLink
 }));
 
@@ -86,7 +86,7 @@ interface CreateComponentResult {
 }
 
 interface EditLinksMockParams {
-  readonly linkConverter: (link: LinkInfo) => unknown;
+  readonly referenceConverter: (link: LinkInfo) => unknown;
 }
 
 interface LinkInfo {
@@ -322,8 +322,8 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
     const { app, openLinkText } = createComponent({ getFirstLinkpathDest: getFirstLinkpathDestination });
     hoisted.mockGenerateMarkdownLink.mockReturnValue('[[notes/test]]');
     hoisted.mockEditLinks.mockImplementation((params: EditLinksMockParams): void => {
-      expect(params.linkConverter({ link: 'test', original: '[[test]]' })).toBe('[[notes/test]]');
-      expect(params.linkConverter({ link: 'other', original: '[[other]]' })).toBeUndefined();
+      expect(params.referenceConverter({ link: 'test', original: '[[test]]' })).toBe('[[notes/test]]');
+      expect(params.referenceConverter({ link: 'other', original: '[[other]]' })).toBeUndefined();
     });
 
     await openLinkText('test', 'source.md');

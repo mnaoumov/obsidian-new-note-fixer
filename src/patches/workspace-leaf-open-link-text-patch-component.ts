@@ -5,7 +5,7 @@ import type { App } from 'obsidian';
 import { MonkeyAroundComponent } from '@mnaoumov/obsidian-lib/components/monkey-around-component';
 import { appendCodeBlock } from '@mnaoumov/obsidian-lib/html-element';
 import {
-  editLinks,
+  editReferences,
   generateMarkdownLink
 } from '@mnaoumov/obsidian-lib/link';
 import { confirm } from '@mnaoumov/obsidian-lib/modals/confirm';
@@ -123,9 +123,11 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
         const createdFile = this.app.metadataCache.getFirstLinkpathDest(fullPath, sourcePath);
         linkedFile = this.app.metadataCache.getFirstLinkpathDest(path, sourcePath);
         if (linkedFile !== createdFile && createdFile) {
-          await editLinks({
+          await editReferences({
             app: this.app,
-            linkConverter: (link) => {
+            pathOrFile: sourcePath,
+            pluginNoticeComponent: this.pluginNoticeComponent,
+            referenceConverter: (link) => {
               if (link.link !== linktext) {
                 return;
               }
@@ -136,8 +138,6 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
                 targetPathOrFile: createdFile
               });
             },
-            pathOrFile: sourcePath,
-            pluginNoticeComponent: this.pluginNoticeComponent,
             resourceLockComponent: this.resourceLockComponent
           });
         }

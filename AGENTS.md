@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Filing an issue (for AI agents and humans)
+
+Open issues through the [issue forms](https://github.com/mnaoumov/obsidian-new-note-fixer/issues/new/choose), not as blank issues.
+
+Filing from the CLI or the API (`gh issue create --body`, or an AI agent filing for you) skips the form, and `gh issue create --template` cannot load an issue form. In that case, open the matching form in [`.github/ISSUE_TEMPLATE/`](https://github.com/mnaoumov/obsidian-new-note-fixer/tree/HEAD/.github/ISSUE_TEMPLATE), copy every field as a `### <label>` heading in the form's order, and fill in each one. Always state the plugin version, the Obsidian version and your operating system.
+
 ## Overview
 
 `New Note Fixer` is an Obsidian plugin that unifies the way non-existing notes are created when clicking on their links. It patches `WorkspaceLeaf.openLinkText` so that following a link to a missing note resolves the target path consistently (optionally prompting for the destination folder) and rewrites the source link to the created file. It is built on `@mnaoumov/obsidian-lib` and `@mnaoumov/typescript-lib`, with tooling from `@mnaoumov/obsidian-dev-toolkit` and `@mnaoumov/typescript-dev-toolkit`.

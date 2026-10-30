@@ -79,4 +79,18 @@ describe('Plugin', () => {
 
     plugin.unload();
   });
+
+  it('should register the report bug command via its command handler', async () => {
+    const app = castTo<AppStatics>(App).createConfigured__().asOriginalType__();
+    const plugin = new Plugin(app, strictProxy<PluginManifest>({ id: 'test', name: 'test', version: '1.0.0' }));
+    const addCommandSpy = vi.spyOn(plugin, 'addCommand');
+
+    await plugin.onload();
+
+    expect(addCommandSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'report-bug' })
+    );
+
+    plugin.unload();
+  });
 });

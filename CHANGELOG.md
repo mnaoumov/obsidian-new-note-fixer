@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2.5.0
+
+- docs(readme): point bug reports at the Report a bug command
+- docs: add issue-filing instructions for AI agents
+- feat: add a Report a bug command
+- chore(github): give the bug form the field ids bug-report links prefill
+- build(deps): float obsidian-dev-toolkit and override re2js for GHSA-gg6h-894w-4m9c
+- build(deps): bump @mnaoumov/obsidian-lib to ^10.1.0 and adopt its Reference API names
+- build(deps): bump typescript-dev-toolkit to ^5.2.0
+- build(deps): bump @mnaoumov/typescript-dev-toolkit to ^5.1.0
+- chore(deps): refresh vulnerable development dependencies
+- chore: adopt readonly interface members
+- docs(readme): combine related resources and plugin comparisons
+- docs(readme): add a Similar plugins section
+
 ## 2.4.1
 
 - test(demo-vault): floor `CodeScript Toolkit` at 15.0.0

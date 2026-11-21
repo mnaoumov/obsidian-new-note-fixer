@@ -1,10 +1,48 @@
 import type { App } from 'obsidian';
 
-import { Notice } from 'obsidian';
 import { configureCommunityPlugin } from '@mnaoumov/obsidian-lib/community-plugins';
+import { Notice } from 'obsidian';
 
 const PLUGIN_ID = 'new-note-fixer';
 const DEMO_DEFAULT_FOLDER_PATH = 'Inbox';
+
+/**
+ * Follows a link from the open note, exactly as clicking it in that note would.
+ *
+ * `WorkspaceLeaf.openLinkText` is the method the plugin patches, so this goes through the same path a
+ * click does.
+ *
+ * Manual equivalent: click the link in the note.
+ */
+export async function followLinkFromActiveNote(app: App, linkText: string): Promise<void> {
+  const sourcePath = app.workspace.getActiveFile()?.path ?? '';
+  await app.workspace.getLeaf().openLinkText(linkText, sourcePath);
+}
+
+/**
+ * Puts **Default location for new notes** back to the vault root.
+ *
+ * Manual equivalent: set **Settings -> Files and links -> Default location for new notes** back to
+ * **Vault folder**.
+ */
+export function restoreDefaultLocation(app: App): void {
+  app.vault.setConfig('newFileLocation', 'root');
+  app.vault.setConfig('newFileFolderPath', '/');
+  new Notice('New notes default to the vault root again.');
+}
+
+/**
+ * Switches the plugin's placement mode.
+ *
+ * Applied live through the plugin's own settings component, so there is no reload.
+ *
+ * Manual equivalent: change **New note location** in **Settings -> Community plugins -> New Note
+ * Fixer**.
+ */
+export async function setNoteLocationMode(app: App, newNoteLocationMode: string): Promise<void> {
+  await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { newNoteLocationMode } });
+  new Notice(`New note location: ${newNoteLocationMode}`);
+}
 
 /**
  * Points Obsidian's own **Default location for new notes** at an `Inbox` folder, creating the folder
@@ -24,42 +62,4 @@ export async function useInboxAsDefaultLocation(app: App): Promise<void> {
   app.vault.setConfig('newFileFolderPath', DEMO_DEFAULT_FOLDER_PATH);
   app.vault.setConfig('newFileLocation', 'folder');
   new Notice(`New notes now default to ${DEMO_DEFAULT_FOLDER_PATH}/. Click the link below.`);
-}
-
-/**
- * Puts **Default location for new notes** back to the vault root.
- *
- * Manual equivalent: set **Settings -> Files and links -> Default location for new notes** back to
- * **Vault folder**.
- */
-export function restoreDefaultLocation(app: App): void {
-  app.vault.setConfig('newFileLocation', 'root');
-  app.vault.setConfig('newFileFolderPath', '/');
-  new Notice('New notes default to the vault root again.');
-}
-
-/**
- * Follows a link from the open note, exactly as clicking it in that note would.
- *
- * `WorkspaceLeaf.openLinkText` is the method the plugin patches, so this goes through the same path a
- * click does.
- *
- * Manual equivalent: click the link in the note.
- */
-export async function followLinkFromActiveNote(app: App, linkText: string): Promise<void> {
-  const sourcePath = app.workspace.getActiveFile()?.path ?? '';
-  await app.workspace.getLeaf().openLinkText(linkText, sourcePath);
-}
-
-/**
- * Switches the plugin's placement mode.
- *
- * Applied live through the plugin's own settings component, so there is no reload.
- *
- * Manual equivalent: change **New note location** in **Settings -> Community plugins -> New Note
- * Fixer**.
- */
-export async function setNoteLocationMode(app: App, newNoteLocationMode: string): Promise<void> {
-  await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { newNoteLocationMode } });
-  new Notice(`New note location: ${newNoteLocationMode}`);
 }

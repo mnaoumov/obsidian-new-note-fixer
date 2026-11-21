@@ -12,7 +12,8 @@ import { strictProxy } from '@mnaoumov/typescript-test-toolkit/strict-proxy';
 import {
   App,
   DropdownComponent,
-  Setting
+  Setting,
+  SliderComponent
 } from 'obsidian';
 import {
   afterEach,
@@ -77,14 +78,16 @@ describe('PluginSettingsTab', () => {
     vi.restoreAllMocks();
   });
 
-  it('should render a single dropdown setting with the expected name and options', () => {
+  it('should render the location dropdown and the recent folders slider', () => {
     const addDropdownSpy = vi.spyOn(Setting.prototype, 'addDropdown');
     const addOptionsSpy = vi.spyOn(DropdownComponent.prototype, 'addOptions');
+    const setLimitsSpy = vi.spyOn(SliderComponent.prototype, 'setLimits');
 
     const tab = createTab();
     const names = renderSettings(tab);
 
-    expect(names).toStrictEqual(['New note location']);
+    expect(names).toStrictEqual(['New note location', 'Number of recent folders']);
+    expect(setLimitsSpy).toHaveBeenCalledWith(0, 20, 1);
     expect(addDropdownSpy).toHaveBeenCalledOnce();
     expect(addOptionsSpy).toHaveBeenCalledWith({
       [NewNoteLocationMode.AskForCurrentNoteFolderFirst]: 'Ask for current note folder first',
@@ -99,5 +102,13 @@ describe('PluginSettingsTab', () => {
 
     const boundKeys = vi.mocked(PluginSettingsTabBase.prototype.bind).mock.calls.map((call) => call[0].propertyName);
     expect(boundKeys).toContain('newNoteLocationMode');
+  });
+
+  it('should bind the slider to recentFolderCount', () => {
+    const tab = createTab();
+    renderSettings(tab);
+
+    const boundKeys = vi.mocked(PluginSettingsTabBase.prototype.bind).mock.calls.map((call) => call[0].propertyName);
+    expect(boundKeys).toContain('recentFolderCount');
   });
 });

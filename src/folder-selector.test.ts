@@ -1,12 +1,15 @@
 import type {
-  App,
   FuzzyMatch,
   TFolder
 } from 'obsidian';
 
 import { castTo } from '@mnaoumov/typescript-lib/object-utils';
 import { strictProxy } from '@mnaoumov/typescript-test-toolkit/strict-proxy';
-import { FuzzySuggestModal } from 'obsidian';
+import {
+  App,
+  FuzzySuggestModal,
+  TFile
+} from 'obsidian';
 import {
   afterEach,
   beforeEach,
@@ -34,9 +37,9 @@ const mockSortSearchResults = vi.fn();
 const mockInvokeAsyncSafely = vi.fn();
 
 const mockFolders: TFolder[] = [
-  strictProxy<TFolder>({ path: 'notes' }),
-  strictProxy<TFolder>({ path: 'notes/daily' }),
-  strictProxy<TFolder>({ path: 'attachments' })
+  strictProxy<TFolder>({ children: [], path: 'notes' }),
+  strictProxy<TFolder>({ children: [], path: 'notes/daily' }),
+  strictProxy<TFolder>({ children: [], path: 'attachments' })
 ];
 
 interface ChooserStub {
@@ -218,6 +221,61 @@ describe('selectFolder', () => {
       const items = instance.getItems();
 
       expect(items).toBe(mockFolders);
+      vi.runOnlyPendingTimers();
+    });
+  });
+
+  describe('FolderSelectorModal recent folders', () => {
+    it('should put the folders with the newest notes first, newest first, up to the count', () => {
+      const folders = createRecentFolders();
+      const { instance } = createModal('/', false, folders.all, 2);
+
+      const paths = instance.getItems().map((folder) => folder.path);
+
+      expect(paths).toStrictEqual(['daily', 'projects', '/', 'archive', 'attachments']);
+      vi.runOnlyPendingTimers();
+    });
+
+    it('should count only notes, not attachments', () => {
+      const folders = createRecentFolders();
+      const { instance } = createModal('/', false, folders.all, 20);
+
+      const paths = instance.getItems().map((folder) => folder.path);
+
+      expect(paths).toStrictEqual(['daily', 'projects', 'archive', '/', 'attachments']);
+      vi.runOnlyPendingTimers();
+    });
+
+    it('should keep the vault order when the count is 0', () => {
+      const folders = createRecentFolders();
+      const { instance } = createModal('/', false, folders.all, 0);
+
+      expect(instance.getItems()).toBe(folders.all);
+      vi.runOnlyPendingTimers();
+    });
+
+    it('should keep the folder the query names on top, then the recent folders, for a query with no search parts', () => {
+      const folders = createRecentFolders();
+      const { instance } = createModal('/', false, folders.all, 2);
+
+      const paths = instance.getSuggestions('/').map((result) => result.item?.path);
+
+      expect(paths).toStrictEqual(['/', 'daily', 'projects', 'archive', 'attachments']);
+      vi.runOnlyPendingTimers();
+    });
+
+    it('should label recent folders and only them', () => {
+      const folders = createRecentFolders();
+      const { instance } = createModal('/', false, folders.all, 1);
+      instance.getItems();
+
+      const recentEl = createDiv();
+      instance.renderSuggestion({ item: folders.daily, match: { matches: [], score: 0 } }, recentEl);
+      const otherEl = createDiv();
+      instance.renderSuggestion({ item: folders.projects, match: { matches: [], score: 0 } }, otherEl);
+
+      expect(recentEl.querySelector('.new-note-fixer-recent-folder')?.textContent).toBe('recent');
+      expect(otherEl.querySelector('.new-note-fixer-recent-folder')).toBeNull();
       vi.runOnlyPendingTimers();
     });
   });
@@ -424,17 +482,31 @@ describe('selectFolder', () => {
   });
 });
 
-function createModal(initialQuery: string, isSpellcheckEnabled = false): CreateModalResult {
+interface AppStatics {
+  readonly createConfigured__: () => App;
+}
+
+interface RecentFolders {
+  readonly all: TFolder[];
+  readonly daily: TFolder;
+  readonly projects: TFolder;
+}
+
+interface TFileStatics {
+  readonly create__: (vault: App['vault'], path: string) => TFile;
+}
+
+function createModal(initialQuery: string, isSpellcheckEnabled = false, folders: TFolder[] = mockFolders, recentFolderCount = 0): CreateModalResult {
   const mockApp = strictProxy<App>({
     vault: strictProxy<App['vault']>({
       createFolder: vi.fn(),
-      getAllFolders: vi.fn().mockReturnValue(mockFolders),
+      getAllFolders: vi.fn().mockReturnValue(folders),
       // Only ever asked for `spellcheck`, by the `onOpen` call that decides whether the box is checked.
       getConfig: castTo<App['vault']['getConfig']>(vi.fn((key: string) => key === 'spellcheck' ? isSpellcheckEnabled : undefined))
     })
   });
 
-  const promise = selectFolder(mockApp, initialQuery);
+  const promise = selectFolder({ app: mockApp, initialQuery, recentFolderCount });
 
   /*
    * `selectFolder` synchronously runs the real `Modal.open()`, whose `onOpen` calls
@@ -447,4 +519,33 @@ function createModal(initialQuery: string, isSpellcheckEnabled = false): CreateM
   }
 
   return { instance, promise };
+}
+
+function createNote(path: string, ctime: number): TFile {
+  const app = castTo<AppStatics>(App).createConfigured__();
+  const file = castTo<TFileStatics>(TFile).create__(app.vault, path);
+  file.stat = { ctime, mtime: ctime, size: 0 };
+  return file;
+}
+
+/**
+ * Five folders in vault order: the root and `archive` hold old notes, `projects` a newer one, `daily` the newest,
+ * and `attachments` only an image newer than all of them.
+ *
+ * @returns The folders.
+ */
+function createRecentFolders(): RecentFolders {
+  const root = strictProxy<TFolder>({ children: [createNote('Root.md', 10)], path: '/' });
+  const archive = strictProxy<TFolder>({ children: [createNote('archive/Old.md', 20)], path: 'archive' });
+  const attachments = strictProxy<TFolder>({ children: [createNote('attachments/Image.png', 1000)], path: 'attachments' });
+  const projects = strictProxy<TFolder>({ children: [createNote('projects/Plan.md', 300)], path: 'projects' });
+  const daily = strictProxy<TFolder>({
+    children: [createNote('daily/2026-11-20.md', 400), createNote('daily/2026-11-01.md', 50), createSubfolder('daily/sub')],
+    path: 'daily'
+  });
+  return { all: [root, archive, attachments, projects, daily], daily, projects };
+}
+
+function createSubfolder(path: string): TFolder {
+  return strictProxy<TFolder>({ children: [], path });
 }

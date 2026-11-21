@@ -1,6 +1,6 @@
 # Settings
 
-Open **Settings -> Community plugins -> `New Note Fixer`** to configure the plugin. The option below lists the setting key stored in the plugin's `data.json`.
+Open **Settings -> Community plugins -> `New Note Fixer`** to configure the plugin. Each option below lists the setting key stored in the plugin's `data.json`.
 
 Each mode has a button, so you can try one and come straight back. They apply live - the plugin's own settings component saves them, so there is no reload:
 
@@ -38,3 +38,9 @@ Manual equivalent for all three: pick the mode from the **New note location** dr
     - `New Note Fixer` first asks whether to create the note in the current note's folder. Confirming opens the folder picker pre-filled with the current note's folder; declining opens it pre-filled with the default location. Either way you can still adjust the folder before creating.
 
 Upgrading from an older version keeps your previous choice: the old `shouldPromptForFolderLocation` toggle maps to `Prompt for folder` when it was on and `Default location` when it was off.
+
+## Number of recent folders
+
+- `recentFolderCount`
+  - how many folders to list at the top of the folder picker, marked `recent`: the folders holding the most recently created notes, newest first. Only notes count, so a folder that just received a pasted image does not move up. The default is `5`, the slider goes up to `20`, and `0` turns the section off.
+  - The section heads the list while the picker's box holds no search text, or only the `/` it opens with. Typing a search ranks the folders by how well they match, and recent ones keep their mark.

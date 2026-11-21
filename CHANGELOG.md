@@ -196,7 +196,7 @@ This release has maintenance changes only. 1 maintenance commit (tests, build, C
 
 ## 2.0.6
 
-This release has maintenance changes only. 1 maintenance commit (tests, build, CI, refactoring, dependencies) is not listed.
+This release has maintenance changes only. 15 maintenance commits (tests, build, CI, refactoring, dependencies) are not listed.
 
 ## 2.0.5
 
@@ -220,8 +220,13 @@ This release has maintenance changes only. 1 maintenance commit (tests, build, C
 
 ## 2.0.0
 
-- feat: add folder selector
-  - fix #1
+This release has 1 new feature. 2 maintenance commits (tests, build, CI, refactoring, dependencies) are not listed.
+
+### New
+
+<!-- cspell:ignore promt (the issue title, quoted verbatim) -->
+
+- add a folder selector: optionally prompt for the folder a new note is created in (re #1 - \[FR\] add settings/option → "force promt for directory")
 
 ## 1.0.27
 

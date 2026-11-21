@@ -52,13 +52,15 @@ A copy of the vault ships with every release. You can access it via any of the f
 
 | Plugin | Features | How `New Note Fixer` differs |
 | --- | --- | --- |
+| [`Confirm New Note`](https://github.com/ikuya/obsidian-confirm-new-note) | Confirmation dialog before a clicked missing link creates a note; also confirms new-note commands | Same creation trigger; decides where the note is created rather than whether |
 | [`Create In Chosen Folder`](https://community.obsidian.md/plugins/create-in-chosen-folder) | Folder prompt on missing-link click; recent folders; drops written folder paths | Same creation trigger; optional default destination; honors paths and rewrites the resulting link |
 | [`Link Forge`](https://community.obsidian.md/plugins/link-forge) | Creates unresolved wikilink targets/folders when leaving a line; shortens unique links | Different trigger: follows a clicked missing link |
 | [`Missing Link File Creator`](https://community.obsidian.md/plugins/missing-link-file-creator) | Command creates missing targets in a note/folder; folder/template rules | Different trigger: one clicked link rather than a bulk command |
 | [`Note Auto Creator`](https://community.obsidian.md/plugins/obsidian-note-autocreator) | Own @-triggered suggester; optional template; creates its chosen targets | Broader link origins: handles clicks on existing unresolved links |
 | [`Note Batcher`](https://community.obsidian.md/plugins/note-batcher) | One-click creation of unresolved links through `Dataview` | Different trigger: one clicked link rather than a bulk command |
+| [`Unresolved Link Helper`](https://community.obsidian.md/plugins/unresolved-link-helper) | Dialog on a followed missing link for the note title and folder; adds the link text as an alias; rewrites the source link to the chosen title | Same creation trigger; keeps the linked name; honors folder and relative paths written in the link; folder prompt optional |
 
-Last searched for similar plugins on 2026-10-26.
+Last searched for similar plugins on 2026-11-21.
 
 ## Installation
 

@@ -80,7 +80,7 @@ describe('New note location - ask for current note folder first', () => {
 
         // The settings component is not a direct child of the plugin: PluginBase.addChild delegates
         // to an internal wrapper component, so it lives deeper in the `_children` tree. Search it.
-        function findSettingsComponent(root: ComponentNode): SettingsHost | undefined {
+        function findSettingsComponent(root: ComponentNode): null | SettingsHost {
           const stack: ComponentNode[] = [root];
           const seen = new Set<ComponentNode>();
           while (stack.length > 0) {
@@ -96,7 +96,7 @@ describe('New note location - ask for current note folder first', () => {
               stack.push(...node._children);
             }
           }
-          return undefined;
+          return null;
         }
 
         await cleanup();

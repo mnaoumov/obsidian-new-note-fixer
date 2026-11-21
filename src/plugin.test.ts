@@ -43,6 +43,16 @@ interface PatchedPrototype {
   openLinkText?: WorkspaceLeaf['openLinkText'];
 }
 
+function createManifest(): PluginManifest {
+  return strictProxy<PluginManifest>({
+    // eslint-disable-next-line unicorn/name-replacements -- Mirrors Obsidian's `PluginManifest.dir`, which the plugin load reads.
+    dir: '.obsidian/plugins/test',
+    id: 'test',
+    name: 'test',
+    version: '1.0.0'
+  });
+}
+
 describe('Plugin', () => {
   afterEach(() => {
     // The patch component installs onto `WorkspaceLeaf.prototype` during load; unload restores it.
@@ -53,7 +63,7 @@ describe('Plugin', () => {
 
   it('should wire the settings, settings-tab and openLinkText-patch children in onloadImpl', async () => {
     const app = castTo<AppStatics>(App).createConfigured__().asOriginalType__();
-    const plugin = new Plugin(app, strictProxy<PluginManifest>({ id: 'test', name: 'test', version: '1.0.0' }));
+    const plugin = new Plugin(app, createManifest());
     const addChildSpy = vi.spyOn(plugin, 'addChild');
 
     await plugin.onload();
@@ -68,7 +78,7 @@ describe('Plugin', () => {
 
   it('should register the open demo vault command via its command handler', async () => {
     const app = castTo<AppStatics>(App).createConfigured__().asOriginalType__();
-    const plugin = new Plugin(app, strictProxy<PluginManifest>({ id: 'test', name: 'test', version: '1.0.0' }));
+    const plugin = new Plugin(app, createManifest());
     const addCommandSpy = vi.spyOn(plugin, 'addCommand');
 
     await plugin.onload();
@@ -82,7 +92,7 @@ describe('Plugin', () => {
 
   it('should register the report bug command via its command handler', async () => {
     const app = castTo<AppStatics>(App).createConfigured__().asOriginalType__();
-    const plugin = new Plugin(app, strictProxy<PluginManifest>({ id: 'test', name: 'test', version: '1.0.0' }));
+    const plugin = new Plugin(app, createManifest());
     const addCommandSpy = vi.spyOn(plugin, 'addCommand');
 
     await plugin.onload();

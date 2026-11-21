@@ -15,4 +15,10 @@ describe('PluginSettings', () => {
 
     expect(settings.newNoteLocationMode).toBe(NewNoteLocationMode.DefaultLocation);
   });
+
+  it('should show 5 recent folders by default', () => {
+    const settings = new PluginSettings();
+
+    expect(settings.recentFolderCount).toBe(5);
+  });
 });

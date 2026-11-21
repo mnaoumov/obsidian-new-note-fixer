@@ -111,7 +111,11 @@ export class WorkspaceLeafOpenLinkTextPatchComponent extends MonkeyAroundCompone
             }
           }
 
-          const folder = await selectFolder(this.app, directory);
+          const folder = await selectFolder({
+            app: this.app,
+            initialQuery: directory,
+            recentFolderCount: this.pluginSettingsComponent.settings.recentFolderCount
+          });
           if (!folder) {
             return;
           }

@@ -182,7 +182,7 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
     await openLinkText('./Assets/Note', 'Notes/Project/Project.md');
 
     expect(hoisted.mockConfirm).not.toHaveBeenCalled();
-    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'Notes/Project/Assets');
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.objectContaining({ initialQuery: 'Notes/Project/Assets', recentFolderCount: 5 }));
     expect(next).toHaveBeenCalledWith('/selected/Note', 'Notes/Project/Project.md', undefined);
   });
 
@@ -223,7 +223,7 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
 
     await openLinkText('test', 'source.md');
 
-    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), '/');
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.objectContaining({ initialQuery: '/', recentFolderCount: 5 }));
     expect(next).toHaveBeenCalledWith('/root/test', 'source.md', undefined);
   });
 
@@ -237,7 +237,7 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
     expect(hoisted.mockConfirm).toHaveBeenCalled();
     const title = castTo<DocumentFragment>(hoisted.mockConfirm.mock.calls[0]?.[0].title);
     expect(title.querySelector('code')?.textContent).toBe('New Note Fixer');
-    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'projects');
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.objectContaining({ initialQuery: 'projects', recentFolderCount: 5 }));
     expect(next).toHaveBeenCalledWith('/selected/test', 'projects/source.md', undefined);
   });
 
@@ -248,7 +248,7 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
 
     await openLinkText('test', 'source.md');
 
-    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), '/');
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.objectContaining({ initialQuery: '/', recentFolderCount: 5 }));
     expect(next).toHaveBeenCalledWith('/selected/test', 'source.md', undefined);
   });
 
@@ -260,7 +260,7 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
     await openLinkText('test', 'projects/source.md');
 
     expect(hoisted.mockConfirm).toHaveBeenCalled();
-    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'notes');
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.objectContaining({ initialQuery: 'notes', recentFolderCount: 5 }));
     expect(next).toHaveBeenCalledWith('/selected/test', 'projects/source.md', undefined);
   });
 
@@ -271,7 +271,7 @@ describe('WorkspaceLeafOpenLinkTextPatchComponent', () => {
     await openLinkText('test', '');
 
     expect(hoisted.mockConfirm).not.toHaveBeenCalled();
-    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.anything(), 'notes');
+    expect(hoisted.mockSelectFolder).toHaveBeenCalledWith(expect.objectContaining({ initialQuery: 'notes', recentFolderCount: 5 }));
     expect(next).toHaveBeenCalledWith('/selected/test', '', undefined);
   });
 
@@ -349,7 +349,10 @@ function createComponent(options: CreateComponentOptions = {}): CreateComponentR
     })
   });
   const pluginSettingsComponent = strictProxy<PluginSettingsComponent>({
-    settings: strictProxy<PluginSettings>({ newNoteLocationMode: options.newNoteLocationMode ?? NewNoteLocationMode.DefaultLocation })
+    settings: strictProxy<PluginSettings>({
+      newNoteLocationMode: options.newNoteLocationMode ?? NewNoteLocationMode.DefaultLocation,
+      recentFolderCount: 5
+    })
   });
 
   /*

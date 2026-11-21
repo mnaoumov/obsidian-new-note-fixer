@@ -11,28 +11,53 @@ import { invokeAsyncSafely } from '@mnaoumov/typescript-lib/async';
 import {
   FuzzySuggestModal,
   prepareFuzzySearch,
-  sortSearchResults
+  sortSearchResults,
+  TFile
 } from 'obsidian';
 
-interface FolderSelectorModalConstructorParams {
+/*
+ * The recent-folders section is adapted from `Create In Chosen Folder`
+ * (https://github.com/bubbatlc/create-in-chosen-folder), used under the MIT License:
+ *
+ * Copyright (c) 2026 Bubba Chabot
+ *
+ * The full license text is in THIRD-PARTY-NOTICES.md.
+ */
+
+interface FolderSelectorModalConstructorParams extends SelectFolderParams {
+  readonly resolve: (this: void, folder: null | TFolder) => void;
+}
+
+interface SelectFolderParams {
   readonly app: App;
   readonly initialQuery: string;
-  readonly resolve: (this: void, folder: null | TFolder) => void;
+  readonly recentFolderCount: number;
 }
 
 class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
   private initialQuery: string;
   private isSelected = false;
+  private orderedFolders: null | TFolder[] = null;
+  private readonly recentFolderCount: number;
+  private readonly recentFolders = new Set<TFolder>();
   private readonly resolve: (folder: null | TFolder) => void;
 
   public constructor(params: FolderSelectorModalConstructorParams) {
     super(params.app);
     this.initialQuery = params.initialQuery;
+    this.recentFolderCount = params.recentFolderCount;
     this.resolve = params.resolve;
   }
 
+  /**
+   * Every folder, the {@link recentFolderCount} folders holding the most recently created notes first, newest first.
+   * Worked out once per picker rather than on every keystroke.
+   *
+   * @returns The ordered folders.
+   */
   public override getItems(): TFolder[] {
-    return this.app.vault.getAllFolders(true);
+    this.orderedFolders ??= this.orderFolders();
+    return this.orderedFolders;
   }
 
   public override getItemText(item: null | TFolder): string {
@@ -82,7 +107,16 @@ class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
     }
 
     sortSearchResults(results);
-    if (results[0]?.item?.path !== query) {
+
+    /*
+     * A query with no search parts (the `/` prefill) matches every folder at score 0, so the stable sort keeps the
+     * recent folders on top. The folder the query names exactly still leads, so Enter keeps choosing it.
+     */
+    const exactMatch = results.find((result) => result.item?.path === query);
+    if (exactMatch) {
+      results.splice(results.indexOf(exactMatch), 1);
+      results.unshift(exactMatch);
+    } else {
       results.unshift({ item: null, match: { matches: [], score: 0 } });
     }
     return results;
@@ -144,6 +178,9 @@ class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
   public override renderSuggestion(item: FuzzyMatch<null | TFolder>, el: HTMLElement): void {
     super.renderSuggestion(item, el);
     if (item.item) {
+      if (this.recentFolders.has(item.item)) {
+        el.createSpan({ cls: ['suggestion-flair', 'new-note-fixer-recent-folder'], text: 'recent' });
+      }
       return;
     }
 
@@ -162,11 +199,43 @@ class FolderSelectorModal extends FuzzySuggestModal<null | TFolder> {
     this.isSelected = true;
     super.selectSuggestion(value, $event);
   }
+
+  private orderFolders(): TFolder[] {
+    const folders = this.app.vault.getAllFolders(true);
+    this.recentFolders.clear();
+    if (this.recentFolderCount <= 0) {
+      return folders;
+    }
+
+    // A folder is as recent as the newest note created directly inside it.
+    const newestNoteCreationTimes = new Map<TFolder, number>();
+    for (const folder of folders) {
+      let newestCreationTime = 0;
+      for (const child of folder.children) {
+        if (child instanceof TFile && child.extension === 'md') {
+          newestCreationTime = Math.max(newestCreationTime, child.stat.ctime);
+        }
+      }
+      if (newestCreationTime > 0) {
+        newestNoteCreationTimes.set(folder, newestCreationTime);
+      }
+    }
+
+    const recentFolders = [...newestNoteCreationTimes]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, this.recentFolderCount)
+      .map(([folder]) => folder);
+    for (const folder of recentFolders) {
+      this.recentFolders.add(folder);
+    }
+
+    return [...recentFolders, ...folders.filter((folder) => !this.recentFolders.has(folder))];
+  }
 }
 
-export async function selectFolder(app: App, initialQuery: string): Promise<null | TFolder> {
+export async function selectFolder(params: SelectFolderParams): Promise<null | TFolder> {
   return await new Promise<null | TFolder>((resolve) => {
-    const selector = new FolderSelectorModal({ app, initialQuery, resolve });
+    const selector = new FolderSelectorModal({ ...params, resolve });
     selector.open();
   });
 }

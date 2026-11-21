@@ -44,6 +44,7 @@ A copy of the vault ships with every release. You can access it via any of the f
 - **A link with a folder in it** stops ignoring your default-location setting. [01 Subfolder link fix](<./demo-vault/01 Subfolder link fix.md>)
 - **A relative link** (`./` or `../`) creates the note relative to the linking note's folder, creating any missing folder on the way. One that climbs out of the vault stops creating files outside it, and stops the `Folder already exists` message that follows. [02 Relative link fix](<./demo-vault/02 Relative link fix.md>)
 - **`Same folder as current file`** keeps working the way you would expect for every link shape. [03 Current note folder](<./demo-vault/03 Current note folder.md>)
+- **Recent folders** head the folder picker, so a folder you keep filing new notes into is picked without typing its name. [04 Settings](<./demo-vault/04 Settings.md>)
 - **Every setting**, by the key it is stored under. [04 Settings](<./demo-vault/04 Settings.md>)
 
 ## See also

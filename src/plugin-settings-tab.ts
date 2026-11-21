@@ -7,6 +7,8 @@ import type { PluginSettings } from './plugin-settings.ts';
 
 import { NewNoteLocationMode } from './plugin-settings.ts';
 
+const MAX_RECENT_FOLDER_COUNT = 20;
+
 export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
   protected override getSettingDefinitionItems(): SettingDefinitionItem[] {
     return [
@@ -36,6 +38,25 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
             this.bind({
               propertyName: 'newNoteLocationMode',
               valueComponent: dropdown
+            });
+          });
+        }
+      }),
+      this.settingEx({
+        desc: createFragment((f) => {
+          f.appendText('How many folders holding the most recently created notes to show at the top of the folder picker.');
+          f.createEl('br');
+          f.appendText('Set to ');
+          appendCodeBlock(f, '0');
+          f.appendText(' to turn it off.');
+        }),
+        name: 'Number of recent folders',
+        render: (setting) => {
+          setting.addSlider((slider) => {
+            slider.setLimits(0, MAX_RECENT_FOLDER_COUNT, 1);
+            this.bind({
+              propertyName: 'recentFolderCount',
+              valueComponent: slider
             });
           });
         }
